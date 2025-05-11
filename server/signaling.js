@@ -49,7 +49,10 @@ io.on("connection", (socket) => {
         },
       });
       // remove disconnecting peer from connections
-      delete connections[disconnectingPeer.peerId];
+      const indexDisconnectingPeer = connections.indexOf(disconnectingPeer);
+      if (indexDisconnectingPeer > -1) {
+        connections.splice(indexDisconnectingPeer);
+      }
     } else {
       console.log(socket.id, "has disconnected");
     }
