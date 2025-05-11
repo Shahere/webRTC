@@ -14,46 +14,20 @@ const server = http.createServer(app);
 const io = socketio(server, { cors: {} });
 
 // API ENDPOINT TO DISPLAY THE CONNECTION TO THE SIGNALING SERVER
-let connections = {};
+let connections = [];
+app.get("/hello", (req, res) => {
+  res.json("world");
+});
 app.get("/connections", (req, res) => {
-  res.json(Object.values(connections));
+  res.json(connections);
 });
 
 // MESSAGING LOGIC
 io.on("connection", (socket) => {
   console.log("User connected with id", socket.id);
 
-  socket.on("ready", (peerId, peerType) => {
-    // Make sure that the hostname is unique, if the hostname is already in connections, send an error and disconnect
-    if (peerId in connections) {
-      socket.emit("uniquenessError", {
-        message: `${peerId} is already connected to the signalling server. Please change your peer ID and try again.`,
-      });
-      socket.disconnect(true);
-    } else {
-      console.log(`Added ${peerId} to connections`);
-      // Let new peer know about all exisiting peers
-      socket.send({
-        from: "all",
-        target: peerId,
-        payload: {
-          action: "open",
-          connections: Object.values(connections),
-          bePolite: false,
-        },
-      }); // The new peer doesn't need to be polite.
-      // Create new peer
-      const newPeer = { socketId: socket.id, peerId, peerType };
-      // Updates connections object
-      connections[peerId] = newPeer;
-      // Let all other peers know about new peer
-      socket.broadcast.emit("message", {
-        from: peerId,
-        target: "all",
-        payload: { action: "open", connections: [newPeer], bePolite: true }, // send connections object with an array containing the only new peer and make all exisiting peers polite.
-      });
-    }
-  });
+  connections.push(socket.id);
+
   socket.on("message", (message) => {
     console.log("Broadcast message receive");
     // Send message to all peers expect the sender
@@ -62,16 +36,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    const disconnectingPeer = Object.values(connections).find(
-      (peer) => peer.socketId === socket.id
-    );
+    const disconnectingPeer = connections.find((peer) => peer === socket.id);
     if (disconnectingPeer) {
-      console.log(
-        "Disconnected",
-        socket.id,
-        "with peerId",
-        disconnectingPeer.peerId
-      );
+      console.log("Disconnected", disconnectingPeer);
       // Make all peers close their peer channels
       socket.broadcast.emit("message", {
         from: disconnectingPeer.peerId,

@@ -74,9 +74,6 @@ let createOffer = async () => {
 // Socket stuff
 
 socket.on("message", async ({ from, target, payload }) => {
-  console.log(payload.action);
-  console.log(payload.candidate);
-
   if (payload.action === "offer") {
     await peerConnection.setRemoteDescription(
       new RTCSessionDescription(payload.sdp)
