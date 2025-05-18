@@ -40,7 +40,7 @@ let createOffer = async () => {
   });
 
   peerConnection.ontrack = (event) => {
-    console.log("onTrack event");
+    //console.log("onTrack event");
     event.streams[0].getTracks().forEach((track) => {
       remoteStream.addTrack(track);
     });
@@ -99,6 +99,11 @@ socket.on("message", async ({ from, target, payload }) => {
 
   if (payload.action === "ice") {
     await peerConnection.addIceCandidate(payload.candidate);
+  }
+
+  if (payload.action == "close") {
+    console.log(payload);
+    console.log(payload.disconnect + " as left the conversation");
   }
 });
 

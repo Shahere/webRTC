@@ -29,25 +29,23 @@ io.on("connection", (socket) => {
   connections.push(socket.id);
 
   socket.on("message", (message) => {
-    console.log("Broadcast message receive");
+    //console.log("Broadcast message receive");
     // Send message to all peers expect the sender
     socket.broadcast.emit("message", message);
-    console.log("Broadcast message send");
+    //console.log("Broadcast message send");
   });
 
   socket.on("disconnect", () => {
     const disconnectingPeer = connections.find((peer) => peer === socket.id);
     if (disconnectingPeer) {
       console.log("Disconnected", disconnectingPeer);
+      const payload = {
+        action: "close",
+        disconnect: disconnectingPeer,
+        message: "Peer has left the signaling server",
+      };
       // Make all peers close their peer channels
-      socket.broadcast.emit("message", {
-        from: disconnectingPeer.peerId,
-        target: "all",
-        payload: {
-          action: "close",
-          message: "Peer has left the signaling server",
-        },
-      });
+      socket.broadcast.emit("message", { payload: payload });
       // remove disconnecting peer from connections
       const indexDisconnectingPeer = connections.indexOf(disconnectingPeer);
       if (indexDisconnectingPeer > -1) {
