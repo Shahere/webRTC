@@ -29,6 +29,13 @@ io.on("connection", (socket) => {
   connections.push(socket.id);
 
   socket.on("message", (message) => {
+    if (message.payload.action == "offer") {
+      console.log("Its an offer");
+      message.payload.socketID = socket.id;
+    } else if (message.payload.action == "answer") {
+      console.log("Its an answer");
+      message.payload.socketID = socket.id;
+    }
     //console.log("Broadcast message receive");
     // Send message to all peers expect the sender
     socket.broadcast.emit("message", message);

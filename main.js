@@ -1,7 +1,7 @@
 let localStream;
+let remoteStream = [];
+let videoDOM = document.getElementById("videos");
 let localStreamDOM = document.getElementById("user-1");
-let remoteStream;
-let remoteStreamDOM = document.getElementById("user-2");
 
 const socket = io("http://localhost:3030");
 
@@ -32,24 +32,28 @@ let init = async () => {
 let createOffer = async () => {
   peerConnection = new RTCPeerConnection(servers);
 
-  remoteStream = new MediaStream();
-  remoteStreamDOM.srcObject = remoteStream;
-
   localStream.getTracks().forEach((track) => {
     peerConnection.addTrack(track, localStream);
   });
 
   peerConnection.ontrack = (event) => {
+    let newMediaStream = new MediaStream();
+    let newVideoDOM = document.createElement("video");
+    newVideoDOM.autoplay = true;
+    newVideoDOM.className = "video-player";
     //console.log("onTrack event");
     event.streams[0].getTracks().forEach((track) => {
-      remoteStream.addTrack(track);
+      newMediaStream.addTrack(track);
     });
+
+    newVideoDOM.srcObject = newMediaStream;
+    remoteStream.push(newMediaStream);
+    videoDOM.appendChild(newVideoDOM);
   };
 
   peerConnection.onicecandidate = (event) => {
     if (event.candidate) {
       socket.emit("message", {
-        from: "peerId123",
         payload: {
           action: "ice",
           candidate: event.candidate,
@@ -63,7 +67,6 @@ let createOffer = async () => {
   //console.log("Offer :", offer);
   console.log("Sending offer !");
   socket.emit("message", {
-    from: "peerId123",
     payload: {
       action: "offer",
       sdp: offer,
@@ -75,6 +78,7 @@ let createOffer = async () => {
 
 socket.on("message", async ({ from, target, payload }) => {
   if (payload.action === "offer") {
+    console.log(payload.socketID);
     await peerConnection.setRemoteDescription(
       new RTCSessionDescription(payload.sdp)
     );
@@ -92,6 +96,7 @@ socket.on("message", async ({ from, target, payload }) => {
   }
 
   if (payload.action === "answer") {
+    console.log(payload.socketID);
     await peerConnection.setRemoteDescription(
       new RTCSessionDescription(payload.sdp)
     );
