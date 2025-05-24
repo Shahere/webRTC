@@ -3,10 +3,13 @@ let remoteStream = [];
 let videoDOM = document.getElementById("videos");
 let localStreamDOM = document.getElementById("user-1");
 
+let myUserId = null;
+
 const socket = io("http://localhost:3030");
 
 //WEBRTC
-let peerConnection;
+let peerConnection = {};
+let mediaStream = {};
 const servers = {
   iceServers: [
     {
@@ -36,37 +39,12 @@ let createOffer = async () => {
     peerConnection.addTrack(track, localStream);
   });
 
-  peerConnection.ontrack = (event) => {
-    let newMediaStream = new MediaStream();
-    let newVideoDOM = document.createElement("video");
-    newVideoDOM.autoplay = true;
-    newVideoDOM.className = "video-player";
-    //console.log("onTrack event");
-    event.streams[0].getTracks().forEach((track) => {
-      newMediaStream.addTrack(track);
-    });
-
-    newVideoDOM.srcObject = newMediaStream;
-    remoteStream.push(newMediaStream);
-    videoDOM.appendChild(newVideoDOM);
-  };
-
-  peerConnection.onicecandidate = (event) => {
-    if (event.candidate) {
-      socket.emit("message", {
-        payload: {
-          action: "ice",
-          candidate: event.candidate,
-        },
-      });
-    }
-  };
-
   let offer = await peerConnection.createOffer();
   await peerConnection.setLocalDescription(offer); //trigger onicecandidate
   //console.log("Offer :", offer);
   console.log("Sending offer !");
   socket.emit("message", {
+    from: myUserId,
     payload: {
       action: "offer",
       sdp: offer,
@@ -76,43 +54,70 @@ let createOffer = async () => {
 
 // Socket stuff
 
-socket.on("message", async ({ from, target, payload }) => {
+socket.on("message", async ({ from, payload }) => {
+  console.log(from);
   if (payload.action === "offer") {
-    console.log(payload.socketID);
-    await peerConnection.setRemoteDescription(
-      new RTCSessionDescription(payload.sdp)
-    );
-    const answer = await peerConnection.createAnswer();
-    await peerConnection.setLocalDescription(answer);
+    const pc = new RTCPeerConnection();
+    peerConnection[from] = pc;
+
+    const stream = new MediaStream();
+    mediaStream[from] = stream;
+
+    pc.ontrack = (event) => {
+      stream.addTrack(event.track);
+      console.log("New track !");
+    };
+
+    pc.onicecandidate = (event) => {
+      if (event.candidate) {
+        socket.emit("message", {
+          from: myUserId,
+          payload: {
+            action: "ice",
+            candidate: event.candidate,
+          },
+        });
+      }
+    };
+
+    await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
 
     socket.emit("message", {
-      from: "peerId456",
+      from: myUserId,
       target: from,
       payload: {
         action: "answer",
-        sdp: peerConnection.localDescription,
+        sdp: pc.localDescription,
       },
     });
   }
 
   if (payload.action === "answer") {
-    console.log(payload.socketID);
-    await peerConnection.setRemoteDescription(
-      new RTCSessionDescription(payload.sdp)
-    );
+    const pc = peerConnections[from];
+    if (!pc) {
+      console.warn(`Aucune peerConnection trouvée pour ${from}`);
+      return;
+    }
+
+    await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
   }
 
-  if (payload.action === "ice") {
-    await peerConnection.addIceCandidate(payload.candidate);
+  if (payload.action === "ice-candidate") {
+    const pc = peerConnections[from];
+    if (pc && payload.candidate) {
+      await pc.addIceCandidate(payload.candidate);
+    }
   }
 
   if (payload.action == "close") {
-    console.log(payload);
-    console.log(payload.disconnect + " as left the conversation");
   }
 });
 
 socket.on("connect", () => {
-  console.log("Connected to signaling server");
+  console.log("Connected to signaling server avec l'id : ", socket.id);
+  myUserId = socket.id;
+
   init();
 });
