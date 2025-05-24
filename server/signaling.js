@@ -39,7 +39,7 @@ io.on("connection", (socket) => {
       console.info("This is a broadcast message");
       socket.broadcast.emit("message", message);
     }
-    console.info("Message if from a specific user");
+    console.info("Message is from a specific user");
 
     io.to(message.target).emit("message", message);
     //console.log("Broadcast message send");

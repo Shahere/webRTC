@@ -8,7 +8,7 @@ let myUserId = null;
 const socket = io("http://localhost:3030");
 
 //WEBRTC
-let peerConnection = {};
+let peerConnections = {};
 let mediaStream = {};
 const servers = {
   iceServers: [
@@ -55,17 +55,22 @@ let createOffer = async () => {
 // Socket stuff
 
 socket.on("message", async ({ from, payload }) => {
-  console.log(from);
   if (payload.action === "offer") {
     const pc = new RTCPeerConnection();
-    peerConnection[from] = pc;
+    console.log(from);
+    peerConnections[from] = pc;
 
     const stream = new MediaStream();
     mediaStream[from] = stream;
 
     pc.ontrack = (event) => {
+      console.log(event);
       stream.addTrack(event.track);
-      console.log("New track !");
+      let videoDOMElement = document.createElement("video");
+      videoDOMElement.id = socket.id;
+      videoDOMElement.srcObject = event.streams[0];
+
+      videoDOM.appendChild(videoDOMElement);
     };
 
     pc.onicecandidate = (event) => {
@@ -95,6 +100,7 @@ socket.on("message", async ({ from, payload }) => {
   }
 
   if (payload.action === "answer") {
+    console.log(from);
     const pc = peerConnections[from];
     if (!pc) {
       console.warn(`Aucune peerConnection trouvée pour ${from}`);
