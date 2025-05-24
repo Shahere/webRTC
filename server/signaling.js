@@ -29,16 +29,19 @@ io.on("connection", (socket) => {
   connections.push(socket.id);
 
   socket.on("message", (message) => {
-    if (message.payload.action == "offer") {
-      console.log("Its an offer");
-      message.payload.socketID = socket.id;
-    } else if (message.payload.action == "answer") {
-      console.log("Its an answer");
-      message.payload.socketID = socket.id;
-    }
-    //console.log("Broadcast message receive");
+    console.log("Broadcast message receive");
     // Send message to all peers expect the sender
-    socket.broadcast.emit("message", message);
+    if (!message.from) {
+      console.warn("Message have no from, abort");
+      return;
+    }
+    if (!message.target) {
+      console.info("This is a broadcast message");
+      socket.broadcast.emit("message", message);
+    }
+    console.info("Message if from a specific user");
+
+    io.to(message.target).emit("message", message);
     //console.log("Broadcast message send");
   });
 
