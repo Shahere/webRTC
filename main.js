@@ -42,7 +42,8 @@ let init = async () => {
 
 socket.on("message", async ({ from, payload }) => {
   if (payload.action === "join") {
-    await createPeerConnection(payload.from, true);
+    console.log("Join reçu de : " + from);
+    await createPeerConnection(from, true);
   }
   if (payload.action === "offer") {
     await createPeerConnection(from, false);
@@ -100,10 +101,14 @@ async function createPeerConnection(remoteUserId, isInitiator) {
 
   pc.ontrack = (event) => {
     console.log(event);
-    stream.addTrack(event.track);
+    let mediaStream = event.streams[0];
     let videoDOMElement = document.createElement("video");
-    videoDOMElement.id = socket.id;
-    videoDOMElement.srcObject = event.streams[0];
+    videoDOMElement.id = remoteUserId;
+    videoDOMElement.srcObject = mediaStream;
+    videoDOMElement.style.width = 640;
+    videoDOMElement.height = 300;
+    videoDOMElement.autoplay = true;
+    videoDOMElement.className = "video-player";
 
     videoDOM.appendChild(videoDOMElement);
   };
@@ -127,7 +132,7 @@ async function createPeerConnection(remoteUserId, isInitiator) {
       from: myUserId,
       target: remoteUserId,
       payload: {
-        action: "answer",
+        action: "offer",
         sdp: pc.localDescription,
       },
     });
