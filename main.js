@@ -29,25 +29,11 @@ let init = async () => {
   });
   localStreamDOM.srcObject = localStream;
 
-  createOffer();
-};
-
-let createOffer = async () => {
-  peerConnection = new RTCPeerConnection(servers);
-
-  localStream.getTracks().forEach((track) => {
-    peerConnection.addTrack(track, localStream);
-  });
-
-  let offer = await peerConnection.createOffer();
-  await peerConnection.setLocalDescription(offer); //trigger onicecandidate
-  //console.log("Offer :", offer);
-  console.log("Sending offer !");
+  //Se register auprès du serveur :
   socket.emit("message", {
     from: myUserId,
     payload: {
-      action: "offer",
-      sdp: offer,
+      action: "join",
     },
   });
 };
@@ -55,52 +41,28 @@ let createOffer = async () => {
 // Socket stuff
 
 socket.on("message", async ({ from, payload }) => {
+  if (payload.action === "join") {
+    await createPeerConnection(payload.from, true);
+  }
   if (payload.action === "offer") {
-    const pc = new RTCPeerConnection();
-    console.log(from);
-    peerConnections[from] = pc;
-
-    const stream = new MediaStream();
-    mediaStream[from] = stream;
-
-    pc.ontrack = (event) => {
-      console.log(event);
-      stream.addTrack(event.track);
-      let videoDOMElement = document.createElement("video");
-      videoDOMElement.id = socket.id;
-      videoDOMElement.srcObject = event.streams[0];
-
-      videoDOM.appendChild(videoDOMElement);
-    };
-
-    pc.onicecandidate = (event) => {
-      if (event.candidate) {
-        socket.emit("message", {
-          from: myUserId,
-          payload: {
-            action: "ice",
-            candidate: event.candidate,
-          },
-        });
-      }
-    };
-
-    await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
-    const answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
+    await createPeerConnection(from, false);
+    await peerConnections[from].setRemoteDescription(
+      new RTCSessionDescription(payload.sdp)
+    );
+    const answer = await peerConnections[from].createAnswer();
+    await peerConnections[from].setLocalDescription(answer);
 
     socket.emit("message", {
       from: myUserId,
       target: from,
       payload: {
         action: "answer",
-        sdp: pc.localDescription,
+        sdp: answer,
       },
     });
   }
 
   if (payload.action === "answer") {
-    console.log(from);
     const pc = peerConnections[from];
     if (!pc) {
       console.warn(`Aucune peerConnection trouvée pour ${from}`);
@@ -127,3 +89,47 @@ socket.on("connect", () => {
 
   init();
 });
+
+async function createPeerConnection(remoteUserId, isInitiator) {
+  if (peerConnections[remoteUserId]) return;
+
+  const pc = new RTCPeerConnection();
+  peerConnections[remoteUserId] = pc;
+
+  localStream.getTracks().forEach((track) => pc.addTrack(track, localStream));
+
+  pc.ontrack = (event) => {
+    console.log(event);
+    stream.addTrack(event.track);
+    let videoDOMElement = document.createElement("video");
+    videoDOMElement.id = socket.id;
+    videoDOMElement.srcObject = event.streams[0];
+
+    videoDOM.appendChild(videoDOMElement);
+  };
+
+  pc.onicecandidate = (event) => {
+    if (event.candidate) {
+      socket.emit("message", {
+        from: myUserId,
+        payload: {
+          action: "ice",
+          candidate: event.candidate,
+        },
+      });
+    }
+  };
+
+  if (isInitiator) {
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    socket.emit("message", {
+      from: myUserId,
+      target: remoteUserId,
+      payload: {
+        action: "answer",
+        sdp: pc.localDescription,
+      },
+    });
+  }
+}

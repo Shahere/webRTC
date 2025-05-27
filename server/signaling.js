@@ -35,7 +35,14 @@ io.on("connection", (socket) => {
       console.warn("Message have no from, abort");
       return;
     }
+
     if (!message.target) {
+      /* Message types :
+        - Join 
+        - offer
+        - anwser
+        - ice-candidate 
+      */
       console.info("This is a broadcast message");
       socket.broadcast.emit("message", message);
     }
