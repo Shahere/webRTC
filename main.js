@@ -97,20 +97,31 @@ async function createPeerConnection(remoteUserId, isInitiator) {
   const pc = new RTCPeerConnection();
   peerConnections[remoteUserId] = pc;
 
-  localStream.getTracks().forEach((track) => pc.addTrack(track, localStream));
+  localStream.getTracks().forEach((track) => {
+    pc.addTrack(track, localStream);
+  });
 
   pc.ontrack = (event) => {
-    console.log(event);
-    let mediaStream = event.streams[0];
-    let videoDOMElement = document.createElement("video");
-    videoDOMElement.id = remoteUserId;
-    videoDOMElement.srcObject = mediaStream;
-    videoDOMElement.style.width = 640;
-    videoDOMElement.height = 300;
-    videoDOMElement.autoplay = true;
-    videoDOMElement.className = "video-player";
+    const remoteStream = event.streams?.[0] || new MediaStream([event.track]);
 
-    videoDOM.appendChild(videoDOMElement);
+    console.log("Track reçu:", event.track);
+    console.log("Stream reçu:", remoteStream);
+    console.log("Track state:", event.track.readyState);
+
+    const videoElement = document.createElement("video");
+    videoElement.id = "video-" + remoteUserId;
+    videoElement.autoplay = true;
+    videoElement.playsInline = true;
+    videoElement.muted = false;
+    videoElement.className = "video-player";
+
+    videoDOM.appendChild(videoElement);
+
+    videoElement.srcObject = remoteStream;
+
+    videoElement.onloadedmetadata = () => {
+      videoElement.play().catch((e) => console.error("Erreur lecture:", e));
+    };
   };
 
   pc.onicecandidate = (event) => {
