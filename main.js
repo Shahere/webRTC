@@ -25,7 +25,7 @@ const servers = {
 let init = async () => {
   localStream = await navigator.mediaDevices.getUserMedia({
     video: true,
-    audio: false,
+    audio: true,
   });
   localStreamDOM.srcObject = localStream;
 
@@ -102,26 +102,23 @@ async function createPeerConnection(remoteUserId, isInitiator) {
   });
 
   pc.ontrack = (event) => {
-    const remoteStream = event.streams?.[0] || new MediaStream([event.track]);
-
-    console.log("Track reçu:", event.track);
-    console.log("Stream reçu:", remoteStream);
+    console.log(event.streams[0].getVideoTracks());
+    /*console.log("Track reçu:", event.track);
+    console.log("Stream reçu:", remoteStreamEvent);
     console.log("Track state:", event.track.readyState);
 
     const videoElement = document.createElement("video");
     videoElement.id = "video-" + remoteUserId;
     videoElement.autoplay = true;
-    videoElement.playsInline = true;
-    videoElement.muted = false;
+    videoElement.muted = true;
     videoElement.className = "video-player";
 
-    videoDOM.appendChild(videoElement);
+    videoDOM.appendChild(videoElement);*/
 
-    videoElement.srcObject = remoteStream;
-
-    videoElement.onloadedmetadata = () => {
-      videoElement.play().catch((e) => console.error("Erreur lecture:", e));
-    };
+    //videoElement.srcObject = remoteStreamEvent;
+    let videoElement = document.getElementById("user-2");
+    console.log(videoElement);
+    videoElement.srcObject = event.streams[0];
   };
 
   pc.onicecandidate = (event) => {
