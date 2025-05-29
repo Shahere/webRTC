@@ -25,7 +25,7 @@ const servers = {
 let init = async () => {
   localStream = await navigator.mediaDevices.getUserMedia({
     video: true,
-    audio: true,
+    audio: false,
   });
   localStreamDOM.srcObject = localStream;
 
@@ -46,6 +46,7 @@ socket.on("message", async ({ from, payload }) => {
     await createPeerConnection(from, true);
   }
   if (payload.action === "offer") {
+    console.log("Offre reçu de : " + from);
     await createPeerConnection(from, false);
     await peerConnections[from].setRemoteDescription(
       new RTCSessionDescription(payload.sdp)
@@ -64,6 +65,7 @@ socket.on("message", async ({ from, payload }) => {
   }
 
   if (payload.action === "answer") {
+    console.log("Answer reçu de :" + from);
     const pc = peerConnections[from];
     if (!pc) {
       console.warn(`Aucune peerConnection trouvée pour ${from}`);
@@ -73,7 +75,8 @@ socket.on("message", async ({ from, payload }) => {
     await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
   }
 
-  if (payload.action === "ice-candidate") {
+  if (payload.action === "ice") {
+    console.log("Ice candidate reçu de : " + from);
     const pc = peerConnections[from];
     if (pc && payload.candidate) {
       await pc.addIceCandidate(payload.candidate);
@@ -102,26 +105,23 @@ async function createPeerConnection(remoteUserId, isInitiator) {
   });
 
   pc.ontrack = (event) => {
-    console.log(event.streams[0].getVideoTracks());
-    /*console.log("Track reçu:", event.track);
-    console.log("Stream reçu:", remoteStreamEvent);
-    console.log("Track state:", event.track.readyState);
-
     const videoElement = document.createElement("video");
     videoElement.id = "video-" + remoteUserId;
     videoElement.autoplay = true;
     videoElement.muted = true;
     videoElement.className = "video-player";
 
-    videoDOM.appendChild(videoElement);*/
+    videoDOM.appendChild(videoElement);
 
-    //videoElement.srcObject = remoteStreamEvent;
-    let videoElement = document.getElementById("user-2");
-    console.log(videoElement);
     videoElement.srcObject = event.streams[0];
   };
 
+  pc.oniceconnectionstatechange = (ev) => {
+    console.log(ev);
+  };
+
   pc.onicecandidate = (event) => {
+    console.log("oncandidate", pc.iceConnectionState);
     if (event.candidate) {
       socket.emit("message", {
         from: myUserId,
