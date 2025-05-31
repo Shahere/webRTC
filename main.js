@@ -1,5 +1,4 @@
 let localStream;
-let remoteStream = [];
 let videoDOM = document.getElementById("videos");
 let localStreamDOM = document.getElementById("user-1");
 
@@ -84,6 +83,12 @@ socket.on("message", async ({ from, payload }) => {
   }
 
   if (payload.action == "close") {
+    let userId = payload.disconnect;
+    console.log(userId + " has disconnect, reason : " + payload.message);
+    //TODO Clean the user
+    peerConnections[userId] = null;
+    let videoToDelete = document.getElementById("video-" + userId);
+    videoToDelete.remove();
   }
 });
 
@@ -116,9 +121,9 @@ async function createPeerConnection(remoteUserId, isInitiator) {
     videoElement.srcObject = event.streams[0];
   };
 
-  pc.oniceconnectionstatechange = (ev) => {
+  /*pc.oniceconnectionstatechange = (ev) => {
     console.log(ev);
-  };
+  };*/
 
   pc.onicecandidate = (event) => {
     console.log("oncandidate", pc.iceConnectionState);
