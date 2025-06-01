@@ -1,11 +1,16 @@
-#videos {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2em;
+body {
+    margin: 0;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    background-color: black ;
 }
 
-.video-player {
-    background-color: black;
-    width: 100%;
-    height: 300px;
+#videos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.fullScreenVideo {
+    height: 100vh;
 }

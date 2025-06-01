@@ -1,4 +1,5 @@
 let localStream;
+let nbPeople = 0;
 let videoDOM = document.getElementById("videos");
 let localStreamDOM = document.getElementById("user-1");
 
@@ -26,7 +27,9 @@ let init = async () => {
     video: true,
     audio: false,
   });
-  localStreamDOM.srcObject = localStream;
+  let videoelement = createDOMVideoElement(videoDOM, myUserId, localStream);
+  nbPeople++;
+  videoelement.classList.add("fullScreenVideo");
 
   //Se register auprès du serveur :
   socket.emit("message", {
@@ -43,6 +46,7 @@ socket.on("message", async ({ from, payload }) => {
   if (payload.action === "join") {
     console.log("Join reçu de : " + from);
     await createPeerConnection(from, true);
+    nbPeople++;
   }
   if (payload.action === "offer") {
     console.log("Offre reçu de : " + from);
@@ -89,6 +93,7 @@ socket.on("message", async ({ from, payload }) => {
     peerConnections[userId] = null;
     let videoToDelete = document.getElementById("video-" + userId);
     videoToDelete.remove();
+    nbPeople--;
   }
 });
 
@@ -110,15 +115,7 @@ async function createPeerConnection(remoteUserId, isInitiator) {
   });
 
   pc.ontrack = (event) => {
-    const videoElement = document.createElement("video");
-    videoElement.id = "video-" + remoteUserId;
-    videoElement.autoplay = true;
-    videoElement.muted = true;
-    videoElement.className = "video-player";
-
-    videoDOM.appendChild(videoElement);
-
-    videoElement.srcObject = event.streams[0];
+    createDOMVideoElement(videoDOM, remoteUserId, event.streams[0]);
   };
 
   /*pc.oniceconnectionstatechange = (ev) => {
