@@ -13,3 +13,16 @@ function createDOMVideoElement(parent, remoteUserId, mediaStream) {
 
   return videoElement;
 }
+
+function changeRoll(nbUser) {
+  let videoDOM = document.getElementById("videos");
+
+  if (nbUser >= 2) {
+    console.log("More 2");
+    videoDOM.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+    return;
+  }
+
+  console.log("less 2");
+  videoDOM.style.backgroundColor = "rgba(0, 0, 0, 0)";
+}

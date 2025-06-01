@@ -27,9 +27,10 @@ let init = async () => {
     video: true,
     audio: false,
   });
-  let videoelement = createDOMVideoElement(videoDOM, myUserId, localStream);
+  let fullscreenvideo = document.getElementById("user-1");
+  fullscreenvideo.srcObject = localStream;
   nbPeople++;
-  videoelement.classList.add("fullScreenVideo");
+  changeRoll(nbPeople);
 
   //Se register auprès du serveur :
   socket.emit("message", {
@@ -47,6 +48,7 @@ socket.on("message", async ({ from, payload }) => {
     console.log("Join reçu de : " + from);
     await createPeerConnection(from, true);
     nbPeople++;
+    changeRoll(nbPeople);
   }
   if (payload.action === "offer") {
     console.log("Offre reçu de : " + from);
@@ -94,6 +96,7 @@ socket.on("message", async ({ from, payload }) => {
     let videoToDelete = document.getElementById("video-" + userId);
     videoToDelete.remove();
     nbPeople--;
+    changeRoll(nbPeople);
   }
 });
 
