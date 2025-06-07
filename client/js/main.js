@@ -155,3 +155,7 @@ async function createPeerConnection(remoteUserId, isInitiator) {
 function getLocalTracks() {
   return localStream.getTracks();
 }
+
+function getSocket() {
+  return socket;
+}

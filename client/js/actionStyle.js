@@ -30,6 +30,11 @@ function changeRoll(nbUser) {
 }
 
 btnLeave.addEventListener("click", () => {
+  let socket = getSocket();
+  socket.disconnect();
+});
+
+btnMute.addEventListener("click", () => {
   let tracks = getLocalTracks();
   tracks.forEach((track) => {
     if (track.kind === "audio") {
@@ -37,5 +42,3 @@ btnLeave.addEventListener("click", () => {
     }
   });
 });
-
-btnMute.addEventListener("click", () => {});
