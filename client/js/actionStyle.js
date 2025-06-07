@@ -1,4 +1,6 @@
 //Buttons and all that...
+let btnMute = document.getElementsByClassName("mute")[0];
+let btnLeave = document.getElementsByClassName("leave")[0];
 
 function createDOMVideoElement(parent, remoteUserId, mediaStream) {
   const videoElement = document.createElement("video");
@@ -26,3 +28,14 @@ function changeRoll(nbUser) {
   console.log("less 2");
   videoDOM.style.backgroundColor = "rgba(0, 0, 0, 0)";
 }
+
+btnLeave.addEventListener("click", () => {
+  let tracks = getLocalTracks();
+  tracks.forEach((track) => {
+    if (track.kind === "audio") {
+      track.enabled = !track.enabled;
+    }
+  });
+});
+
+btnMute.addEventListener("click", () => {});

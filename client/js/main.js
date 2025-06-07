@@ -25,7 +25,7 @@ const servers = {
 let init = async () => {
   localStream = await navigator.mediaDevices.getUserMedia({
     video: true,
-    audio: false,
+    audio: true,
   });
   let fullscreenvideo = document.getElementById("user-1");
   fullscreenvideo.srcObject = localStream;
@@ -150,4 +150,8 @@ async function createPeerConnection(remoteUserId, isInitiator) {
       },
     });
   }
+}
+
+function getLocalTracks() {
+  return localStream.getTracks();
 }
