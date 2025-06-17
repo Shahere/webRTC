@@ -1,6 +1,7 @@
 //Buttons and all that...
 let btnMute = document.getElementsByClassName("mute")[0];
 let btnLeave = document.getElementsByClassName("leave")[0];
+let displayEndPage = document.getElementsByClassName("endPage")[0];
 
 function createDOMVideoElement(parent, remoteUserId, mediaStream) {
   const videoElement = document.createElement("video");
@@ -32,6 +33,7 @@ function changeRoll(nbUser) {
 btnLeave.addEventListener("click", () => {
   let socket = getSocket();
   socket.disconnect();
+  displayEndPage.style.visibility = "visible";
 });
 
 btnMute.addEventListener("click", () => {
