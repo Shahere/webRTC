@@ -1,7 +1,12 @@
 {
+  "name": "webrtc-signaling-server",
+  "version": "1.0.0",
   "dependencies": {
     "express": "^5.1.0",
     "sirv": "^3.0.1",
     "socket.io": "^4.8.1"
+  },
+  "scripts": {
+    "start": "node signaling.js"
   }
 }
