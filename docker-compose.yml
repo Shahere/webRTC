@@ -12,7 +12,7 @@ services:
     image: webrtc-website
     container_name: webrtc-website
     ports:
-      - 8090:8090
+      - 8090:80
     networks:
       - savinien
     restart: always
