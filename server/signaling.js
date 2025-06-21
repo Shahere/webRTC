@@ -9,9 +9,15 @@ const PORT = 3030;
 
 // SETUP SERVERS
 const app = express();
-app.use(express.json(), cors());
+app.use(express.json());
+app.use(cors());
 const server = http.createServer(app);
-const io = socketio(server, { cors: {} });
+const io = socketio(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
 
 // API ENDPOINT TO DISPLAY THE CONNECTION TO THE SIGNALING SERVER
 let connections = [];
