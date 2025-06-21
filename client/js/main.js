@@ -2,10 +2,12 @@ let localStream;
 let nbPeople = 0;
 let videoDOM = document.getElementById("videos");
 let localStreamDOM = document.getElementById("user-1");
-
 let myUserId = null;
 
-const socket = io("http://localhost:3030");
+let serverUrl = "http://localhost:3030";
+serverUrl = "http://webrtc-server:3030"; // For Docker
+
+const socket = io(serverUrl);
 
 //WEBRTC
 let peerConnections = {};
