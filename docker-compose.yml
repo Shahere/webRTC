@@ -6,6 +6,7 @@ services:
       - 3030:3030
     networks:
       - savinien
+      - webrtc
     restart: always
 
   webrtc-website:
@@ -15,8 +16,10 @@ services:
       - 8090:80
     networks:
       - savinien
+      - webrtc
     restart: always
 
 networks:
+  webrtc:
   savinien:
     external: true

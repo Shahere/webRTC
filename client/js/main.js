@@ -5,7 +5,7 @@ let localStreamDOM = document.getElementById("user-1");
 let myUserId = null;
 
 let serverUrl = "http://localhost:3030";
-serverUrl = "http://webrtc-server:3030"; // For Docker
+serverUrl = "https://webrtc-server:3030"; // For Docker
 
 const socket = io(serverUrl);
 
