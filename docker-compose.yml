@@ -1,0 +1,21 @@
+services:
+  webrtc-server:
+    image: webrtc-server
+    container_name: webrtc-server
+    ports:
+      - 3030:3030
+    networks:
+      - savinien
+    restart: always
+
+  webrtc-website:
+    image: webrtc-website
+    container_name: webrtc-website
+    ports:
+      - 8090:8090
+    networks:
+      - savinien
+    restart: always
+
+networks:
+  savinien:
