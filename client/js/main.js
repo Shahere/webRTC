@@ -50,8 +50,6 @@ socket.on("message", async ({ from, payload }) => {
   if (payload.action === "join") {
     console.log("Join reçu de : " + from);
     await createPeerConnection(from, true);
-    nbPeople++;
-    changeRoll(nbPeople);
   }
   if (payload.action === "offer") {
     console.log("Offre reçu de : " + from);
@@ -61,6 +59,9 @@ socket.on("message", async ({ from, payload }) => {
     );
     const answer = await peerConnections[from].createAnswer();
     await peerConnections[from].setLocalDescription(answer);
+
+    nbPeople++;
+    changeRoll(nbPeople);
 
     socket.emit("message", {
       from: myUserId,
@@ -79,6 +80,9 @@ socket.on("message", async ({ from, payload }) => {
       console.warn(`Aucune peerConnection trouvée pour ${from}`);
       return;
     }
+
+    nbPeople++;
+    changeRoll(nbPeople);
 
     await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
   }
