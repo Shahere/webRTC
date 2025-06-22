@@ -3,6 +3,7 @@ let nbPeople = 0;
 let videoDOM = document.getElementById("videos");
 let localStreamDOM = document.getElementById("user-1");
 let myUserId = null;
+let streamList = [];
 
 let serverUrl = "http://localhost:3030";
 serverUrl = "https://signaling.savinienbarbotaud.fr";
@@ -97,6 +98,7 @@ socket.on("message", async ({ from, payload }) => {
     peerConnections[userId] = null;
     let videoToDelete = document.getElementById("video-" + userId);
     videoToDelete.remove();
+    streamList = streamList.filter((id) => id !== userId);
     nbPeople--;
     changeRoll(nbPeople);
   }
@@ -120,7 +122,10 @@ async function createPeerConnection(remoteUserId, isInitiator) {
   });
 
   pc.ontrack = (event) => {
-    createDOMVideoElement(videoDOM, remoteUserId, event.streams[0]);
+    if (!streamList.includes(remoteUserId)) {
+      streamList.push(remoteUserId);
+      createDOMVideoElement(videoDOM, remoteUserId, event.streams[0]);
+    }
   };
 
   /*pc.oniceconnectionstatechange = (ev) => {
