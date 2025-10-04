@@ -32,6 +32,7 @@ let init = async () => {
   });
   let fullscreenvideo = document.getElementById("user-1");
   fullscreenvideo.srcObject = localStream;
+  localStreamDOM.muted = true;
   nbPeople++;
   changeRoll(nbPeople);
 
