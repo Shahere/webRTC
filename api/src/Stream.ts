@@ -17,6 +17,7 @@ class Stream {
   static getScreen() {}
 
   attachToElement(domElement: HTMLVideoElement): void {
+    this.domElement = domElement;
     domElement.srcObject = this.mediastream;
   }
 
