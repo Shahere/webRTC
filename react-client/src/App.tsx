@@ -1,39 +1,30 @@
+import { useState } from "react";
 import "./App.css";
-import { Stream } from "meetmesavinien";
-import { useRef } from "react";
+import { PreviewScreen } from "./components/PreviewScreen";
+
+enum States {
+  Configuration,
+  Conference,
+  End,
+}
 
 function App() {
-  const localStreamRef = useRef<HTMLVideoElement>(null);
-  let localStream: Stream | null = null;
+  const [currentState, setCurrentState] = useState(States.Configuration);
 
-  async function startLocalStream() {
-    localStream = await Stream.getCamera(true, true);
-
-    if (localStreamRef.current) {
-      localStream.attachToElement(localStreamRef.current);
+  function showStates() {
+    switch (currentState) {
+      case States.Configuration:
+        return <PreviewScreen></PreviewScreen>;
+        break;
+      case States.Conference:
+        break;
+      case States.End:
+        break;
+      default:
+        break;
     }
   }
-
-  function stopLocalStream() {
-    if (localStream) {
-      localStream.detachToElement();
-      localStream = null;
-    }
-  }
-
-  return (
-    <div className="App">
-      <div className="content">
-        <button id="startstream" onClick={startLocalStream}>
-          Start stream
-        </button>
-        <button id="stopstream" onClick={stopLocalStream}>
-          Stop stream
-        </button>
-        <video autoPlay ref={localStreamRef}></video>
-      </div>
-    </div>
-  );
+  return showStates();
 }
 
 export default App;
