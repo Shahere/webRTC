@@ -22,7 +22,8 @@ export function PreviewScreen() {
 
   return (
     <div className="App">
-      <div className="bg-black">
+      <div className="bg-white">
+        <p className="text-6xl">Hello</p>
         <button id="startstream" onClick={startLocalStream}>
           Start stream
         </button>
