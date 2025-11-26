@@ -3,24 +3,31 @@ import { Stream } from "meetmesavinien";
 import { useRef } from "react";
 
 function App() {
-  let localStreamRef = useRef();
-  let localStream = null;
+  const localStreamRef = useRef<HTMLVideoElement>(null);
+  let localStream: Stream | null = null;
 
   async function startLocalStream() {
     localStream = await Stream.getCamera(true, true);
-    localStream.attachToElement(localStreamRef.current);
+
+    if (localStreamRef.current) {
+      localStream.attachToElement(localStreamRef.current);
+    }
   }
+
   function stopLocalStream() {
-    localStream.detachToElement();
-    localStream = null;
+    if (localStream) {
+      localStream.detachToElement();
+      localStream = null;
+    }
   }
+
   return (
     <div className="App">
       <div className="content">
         <button id="startstream" onClick={startLocalStream}>
           Start stream
         </button>
-        <button id="startstream" onClick={stopLocalStream}>
+        <button id="stopstream" onClick={stopLocalStream}>
           Stop stream
         </button>
         <video autoPlay ref={localStreamRef}></video>
