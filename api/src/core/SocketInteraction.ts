@@ -1,13 +1,17 @@
 import { io, Socket } from "socket.io-client";
-import { serverUrl } from "../constants";
+import { serverUrl, localServerUrl } from "../constants";
+import { Stream } from "../Stream";
 
 class SocketInteraction extends EventTarget {
   socket!: Socket;
   private _userId?: string;
   peerConnections: any = {};
+  private _confId?: number;
+  publishStream: Stream | undefined;
 
   async init() {
-    this.socket = io(serverUrl);
+    this.socket = io(localServerUrl);
+    this._confId = undefined;
 
     return new Promise<void>((resolve, reject) => {
       this.socket.on("connect", () => {
@@ -27,17 +31,32 @@ class SocketInteraction extends EventTarget {
     return this._userId;
   }
 
-  register() {
+  publish(stream: Stream) {
+    this.publishStream = stream;
+  }
+
+  register(id: number) {
+    console.log("Join id : " + id);
+    if (!this.publishStream) {
+      throw new Error("call publish first");
+    }
     this.socket.emit("message", {
       from: this.userId,
       payload: {
         action: "join",
       },
     });
+    this._confId = id;
+  }
+
+  unregister() {
+    this._confId = undefined;
+    this.socket.disconnect();
   }
 
   private setupListeners() {
     this.socket.on("message", async ({ from, payload }) => {
+      if (!this._confId) return;
       if (payload.action === "join") {
         console.log("Join reçu de : " + from);
         await this.createPeerConnection(from, true);
@@ -108,7 +127,7 @@ class SocketInteraction extends EventTarget {
     remoteUserId: string,
     isInitiator: boolean
   ) {
-    if (this.peerConnections[remoteUserId]) return;
+    if (this.peerConnections[remoteUserId]) return; // Si la peer existe déjà
 
     const pc = new RTCPeerConnection();
     this.peerConnections[remoteUserId] = pc;
@@ -118,15 +137,19 @@ class SocketInteraction extends EventTarget {
     localStream.getTracks().forEach((track) => {
       pc.addTrack(track, localStream);
     });*/
+    this.publishStream?.mediastream.getTracks().forEach((track) => {
+      pc.addTrack(track, this.publishStream!.mediastream);
+    });
 
     pc.ontrack = (event) => {
+      console.log("ONTRACK");
       /*
       if (!streamList.includes(remoteUserId)) {
         streamList.push(remoteUserId);
         createDOMVideoElement(videoDOM, remoteUserId, event.streams[0]);
       }*/
-      const newevent = new CustomEvent("new stream");
-      this.dispatchEvent(event);
+      /*const newevent = new CustomEvent("new stream");
+      this.dispatchEvent(event);*/
     };
 
     pc.onicecandidate = (event) => {
@@ -134,6 +157,7 @@ class SocketInteraction extends EventTarget {
       if (event.candidate) {
         this.socket.emit("message", {
           from: this._userId,
+          target: remoteUserId,
           payload: {
             action: "ice",
             candidate: event.candidate,
