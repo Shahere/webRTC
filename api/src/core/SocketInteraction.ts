@@ -148,8 +148,12 @@ class SocketInteraction extends EventTarget {
         streamList.push(remoteUserId);
         createDOMVideoElement(videoDOM, remoteUserId, event.streams[0]);
       }*/
-      /*const newevent = new CustomEvent("new stream");
-      this.dispatchEvent(event);*/
+      const newevent = new CustomEvent("stream", {
+        detail: {
+          stream: new Stream(event.streams[0]),
+        },
+      });
+      this.dispatchEvent(newevent);
     };
 
     pc.onicecandidate = (event) => {
