@@ -6,7 +6,7 @@ export function Conference(props: any) {
     useContext(ConferenceContext);
 
   useEffect(() => {
-    console.log("HELO");
+    // Join conférence
   }, []);
 
   return (
