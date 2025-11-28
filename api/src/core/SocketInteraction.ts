@@ -1,0 +1,160 @@
+import { io, Socket } from "socket.io-client";
+import { serverUrl } from "../constants";
+
+class SocketInteraction extends EventTarget {
+  socket!: Socket;
+  private _userId?: string;
+  peerConnections: any = {};
+
+  async init() {
+    this.socket = io(serverUrl);
+
+    return new Promise<void>((resolve, reject) => {
+      this.socket.on("connect", () => {
+        this._userId = this.socket.id;
+        this.setupListeners();
+        resolve();
+      });
+
+      this.socket.on("error", (err) => {
+        reject(err);
+      });
+    });
+  }
+
+  get userId(): string {
+    if (!this._userId) throw new Error("User not connected yet");
+    return this._userId;
+  }
+
+  register() {
+    this.socket.emit("message", {
+      from: this.userId,
+      payload: {
+        action: "join",
+      },
+    });
+  }
+
+  private setupListeners() {
+    this.socket.on("message", async ({ from, payload }) => {
+      if (payload.action === "join") {
+        console.log("Join reçu de : " + from);
+        await this.createPeerConnection(from, true);
+      }
+      if (payload.action === "offer") {
+        console.log("Offre reçu de : " + from);
+        await this.createPeerConnection(from, false);
+        await this.peerConnections[from].setRemoteDescription(
+          new RTCSessionDescription(payload.sdp)
+        );
+        const answer = await this.peerConnections[from].createAnswer();
+        await this.peerConnections[from].setLocalDescription(answer);
+
+        const event = new CustomEvent("new people");
+        this.dispatchEvent(event);
+        //nbPeople++;
+
+        this.socket.emit("message", {
+          from: this._userId,
+          target: from,
+          payload: {
+            action: "answer",
+            sdp: answer,
+          },
+        });
+      }
+
+      if (payload.action === "answer") {
+        console.log("Answer reçu de :" + from);
+        const pc = this.peerConnections[from];
+        if (!pc) {
+          console.warn(`Aucune peerConnection trouvée pour ${from}`);
+          return;
+        }
+
+        const event = new CustomEvent("new people");
+        this.dispatchEvent(event);
+        //nbPeople++;
+
+        await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+      }
+
+      if (payload.action === "ice") {
+        console.log("Ice candidate reçu de : " + from);
+        const pc = this.peerConnections[from];
+        if (pc && payload.candidate) {
+          await pc.addIceCandidate(payload.candidate);
+        }
+      }
+
+      if (payload.action == "close") {
+        let userId = payload.disconnect;
+        console.log(userId + " has disconnect, reason : " + payload.message);
+        //TODO Clean the user
+        this.peerConnections[userId] = null;
+        /*let videoToDelete = document.getElementById("video-" + userId);
+        videoToDelete.remove();
+        streamList = streamList.filter((id) => id !== userId);*/
+
+        const event = new CustomEvent("people leave");
+        this.dispatchEvent(event);
+        //nbPeople--;
+      }
+    });
+  }
+
+  private async createPeerConnection(
+    remoteUserId: string,
+    isInitiator: boolean
+  ) {
+    if (this.peerConnections[remoteUserId]) return;
+
+    const pc = new RTCPeerConnection();
+    this.peerConnections[remoteUserId] = pc;
+
+    // ajouter un flux à la peer
+    /*
+    localStream.getTracks().forEach((track) => {
+      pc.addTrack(track, localStream);
+    });*/
+
+    pc.ontrack = (event) => {
+      /*
+      if (!streamList.includes(remoteUserId)) {
+        streamList.push(remoteUserId);
+        createDOMVideoElement(videoDOM, remoteUserId, event.streams[0]);
+      }*/
+      const newevent = new CustomEvent("new stream");
+      this.dispatchEvent(event);
+    };
+
+    pc.onicecandidate = (event) => {
+      console.log("oncandidate", pc.iceConnectionState);
+      if (event.candidate) {
+        this.socket.emit("message", {
+          from: this._userId,
+          payload: {
+            action: "ice",
+            candidate: event.candidate,
+          },
+        });
+      }
+    };
+
+    if (isInitiator) {
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      this.socket.emit("message", {
+        from: this._userId,
+        target: remoteUserId,
+        payload: {
+          action: "offer",
+          sdp: pc.localDescription,
+        },
+      });
+    }
+  }
+}
+
+export { SocketInteraction };
