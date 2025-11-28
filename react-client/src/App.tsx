@@ -1,7 +1,7 @@
 import { createContext, JSX, useState } from "react";
 import "./App.css";
 import { PreviewScreen } from "./components/PreviewScreen";
-import { Conference } from "./components/Conference";
+import { InConference } from "./components/Conference";
 import { Stream } from "meetmesavinien";
 
 enum States {
@@ -37,7 +37,7 @@ function App() {
       case States.Configuration:
         return <PreviewScreen joinConference={joinConference}></PreviewScreen>;
       case States.Conference:
-        return <Conference></Conference>;
+        return <InConference></InConference>;
       case States.End:
         return <div>end</div>;
       default:
