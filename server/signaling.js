@@ -35,7 +35,8 @@ io.on("connection", (socket) => {
   connections.push(socket.id);
 
   socket.on("message", (message) => {
-    console.log("Broadcast message receive");
+    console.log("Message receive");
+    console.log(message.payload.action);
     // Send message to all peers expect the sender
     if (!message.from) {
       console.warn("Message have no from, abort");
