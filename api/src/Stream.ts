@@ -1,9 +1,13 @@
+import { uidGenerator } from "./utils";
+
 class Stream {
   mediastream: MediaStream;
   domElement: undefined | HTMLVideoElement;
+  id: String;
 
   constructor(mediastream: MediaStream) {
     this.mediastream = mediastream;
+    this.id = uidGenerator();
   }
 
   static async getCamera(video: boolean, audio: boolean): Promise<Stream> {

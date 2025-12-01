@@ -5,6 +5,7 @@ import { StreamDrawer } from "./conference/StreamDrawer";
 
 export interface iStreamsDrawerProps {
   streams: Stream[];
+  setStreams: React.Dispatch<React.SetStateAction<Stream[]>>;
 }
 
 export function InConference(props: any) {
@@ -31,7 +32,7 @@ export function InConference(props: any) {
 
   return (
     <div className="text-white bg-stone-900 w-full h-screen flex justify-center items-center flex-col">
-      <StreamDrawer streams={streams}></StreamDrawer>
+      <StreamDrawer streams={streams} setStreams={setStreams}></StreamDrawer>
     </div>
   );
 }

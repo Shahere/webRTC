@@ -2,7 +2,7 @@ import { Stream } from "meetmesavinien";
 import { useRef, useEffect } from "react";
 import { iMiniVideoProps } from "./StreamDrawer";
 
-export function MiniVideo({ stream }: iMiniVideoProps) {
+export function MiniVideo({ stream, changeMainStream }: iMiniVideoProps) {
   const ref = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -11,6 +11,9 @@ export function MiniVideo({ stream }: iMiniVideoProps) {
 
   return (
     <video
+      onClick={() => {
+        changeMainStream(stream.id);
+      }}
       ref={ref}
       autoPlay
       playsInline
