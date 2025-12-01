@@ -15,7 +15,7 @@ export function MiniVideo({ stream }: iMiniVideoProps) {
       autoPlay
       playsInline
       muted
-      className="w-32 h-24 rounded-lg object-cover border border-white/30"
+      className="rounded-lg object-cover border border-white/30"
     />
   );
 }
