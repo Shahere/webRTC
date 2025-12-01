@@ -16,11 +16,9 @@ export function StreamDrawer({ streams, setStreams }: iStreamsDrawerProps) {
     if (streams.length > 0 && mainVideoRef.current) {
       mainVideoRef.current.srcObject = streams[0].mediastream;
     }
-    console.log(streams);
   }, [streams]);
 
   function changeMainStream(streamId: String) {
-    console.log(streams);
     setStreams((prev) =>
       [...prev].sort((a, b) => {
         if (a.id === streamId) return -1;

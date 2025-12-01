@@ -1,28 +1,39 @@
 import { io, Socket } from "socket.io-client";
-import { serverUrl, localServerUrl } from "../constants";
+import { localServerUrl, serverUrl } from "../constants";
 import { Stream } from "../Stream";
 
-class SocketInteraction extends EventTarget {
-  socket!: Socket;
+interface SocketMessage {
+  from: string;
+  target?: string;
+  payload: {
+    action: "join" | "offer" | "answer" | "ice" | "close";
+    sdp?: RTCSessionDescriptionInit;
+    candidate?: RTCIceCandidate;
+    message?: string;
+    disconnect?: string;
+  };
+}
+
+export class SocketInteraction extends EventTarget {
+  private socket!: Socket;
   private _userId?: string;
-  peerConnections: any = {};
   private _confId?: number;
-  publishStream: Stream | undefined;
+  private publishStream?: Stream;
 
-  async init() {
+  private peerConnections: Record<string, RTCPeerConnection> = {};
+
+  async init(): Promise<void> {
     this.socket = io(localServerUrl);
-    this._confId = undefined;
 
-    return new Promise<void>((resolve, reject) => {
-      this.socket.on("connect", () => {
+    return new Promise((resolve, reject) => {
+      this.socket.once("connect", () => {
         this._userId = this.socket.id;
-        this.setupListeners();
+        this.setupSocketListeners();
         resolve();
       });
 
-      this.socket.on("error", (err) => {
-        reject(err);
-      });
+      this.socket.once("connect_error", reject);
+      this.socket.once("error", reject);
     });
   }
 
@@ -35,154 +46,148 @@ class SocketInteraction extends EventTarget {
     this.publishStream = stream;
   }
 
-  register(id: number) {
-    console.log("Join id : " + id);
+  register(confId: number) {
     if (!this.publishStream) {
-      throw new Error("call publish first");
+      throw new Error("Call publish() before register()");
     }
-    this.socket.emit("message", {
+
+    this._confId = confId;
+
+    this.sendMessage({
       from: this.userId,
-      payload: {
-        action: "join",
-      },
+      payload: { action: "join" },
     });
-    this._confId = id;
+
+    console.log(`[CONF] Join request sent for room ${confId}`);
   }
 
   unregister() {
+    Object.values(this.peerConnections).forEach((pc) => pc.close());
+    this.peerConnections = {};
+
     this._confId = undefined;
     this.socket.disconnect();
+
+    console.log("[CONF] Unregistered and socket closed");
   }
 
-  private setupListeners() {
-    this.socket.on("message", async ({ from, payload }) => {
+  private setupSocketListeners() {
+    this.socket.on("message", async (message: SocketMessage) => {
       if (!this._confId) return;
-      if (payload.action === "join") {
-        console.log("Join reçu de : " + from);
-        await this.createPeerConnection(from, true);
-      }
-      if (payload.action === "offer") {
-        console.log("Offre reçu de : " + from);
-        await this.createPeerConnection(from, false);
-        await this.peerConnections[from].setRemoteDescription(
-          new RTCSessionDescription(payload.sdp)
-        );
-        const answer = await this.peerConnections[from].createAnswer();
-        await this.peerConnections[from].setLocalDescription(answer);
 
-        const event = new CustomEvent("new people");
-        this.dispatchEvent(event);
-        //nbPeople++;
+      const { from, payload } = message;
 
-        this.socket.emit("message", {
-          from: this._userId,
-          target: from,
-          payload: {
-            action: "answer",
-            sdp: answer,
-          },
-        });
-      }
+      switch (payload.action) {
+        case "join":
+          console.log(`[RTC] Join received from ${from}`);
+          await this.createPeerConnection(from, true);
+          break;
 
-      if (payload.action === "answer") {
-        console.log("Answer reçu de :" + from);
-        const pc = this.peerConnections[from];
-        if (!pc) {
-          console.warn(`Aucune peerConnection trouvée pour ${from}`);
-          return;
-        }
+        case "offer":
+          console.log(`[RTC] Offer received from ${from}`);
+          await this.handleOffer(from, payload.sdp!);
+          break;
 
-        const event = new CustomEvent("new people");
-        this.dispatchEvent(event);
-        //nbPeople++;
+        case "answer":
+          console.log(`[RTC] Answer received from ${from}`);
+          await this.handleAnswer(from, payload.sdp!);
+          break;
 
-        await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
-      }
+        case "ice":
+          console.log(`[RTC] ICE received from ${from}`);
+          await this.handleIce(from, payload.candidate!);
+          break;
 
-      if (payload.action === "ice") {
-        console.log("Ice candidate reçu de : " + from);
-        const pc = this.peerConnections[from];
-        if (pc && payload.candidate) {
-          await pc.addIceCandidate(payload.candidate);
-        }
-      }
-
-      if (payload.action == "close") {
-        let userId = payload.disconnect;
-        console.log(userId + " has disconnect, reason : " + payload.message);
-        //TODO Clean the user
-        this.peerConnections[userId] = null;
-        /*let videoToDelete = document.getElementById("video-" + userId);
-        videoToDelete.remove();
-        streamList = streamList.filter((id) => id !== userId);*/
-
-        const event = new CustomEvent("people leave");
-        this.dispatchEvent(event);
-        //nbPeople--;
+        case "close":
+          console.log(`[RTC] Peer ${payload.disconnect} disconnected`);
+          this.removePeer(payload.disconnect!);
+          this.dispatchEvent(new CustomEvent("peopleLeave"));
+          break;
       }
     });
   }
 
-  private async createPeerConnection(
-    remoteUserId: string,
-    isInitiator: boolean
-  ) {
-    if (this.peerConnections[remoteUserId]) return; // Si la peer existe déjà
+  private async createPeerConnection(remoteUserId: string, initiator: boolean) {
+    if (this.peerConnections[remoteUserId]) return;
 
     const pc = new RTCPeerConnection();
     this.peerConnections[remoteUserId] = pc;
 
-    // ajouter un flux à la peer
-    /*
-    localStream.getTracks().forEach((track) => {
-      pc.addTrack(track, localStream);
-    });*/
+    // add local tracks
     this.publishStream?.mediastream.getTracks().forEach((track) => {
       pc.addTrack(track, this.publishStream!.mediastream);
     });
 
     pc.ontrack = (event) => {
-      console.log("ONTRACK");
-      /*
-      if (!streamList.includes(remoteUserId)) {
-        streamList.push(remoteUserId);
-        createDOMVideoElement(videoDOM, remoteUserId, event.streams[0]);
-      }*/
-      const newevent = new CustomEvent("stream", {
-        detail: {
-          stream: new Stream(event.streams[0]),
-        },
-      });
-      this.dispatchEvent(newevent);
+      console.log("[RTC] Track received");
+      this.dispatchEvent(
+        new CustomEvent("stream", {
+          detail: { stream: new Stream(event.streams[0]) },
+        })
+      );
     };
 
     pc.onicecandidate = (event) => {
-      console.log("oncandidate", pc.iceConnectionState);
       if (event.candidate) {
-        this.socket.emit("message", {
-          from: this._userId,
+        this.sendMessage({
+          from: this.userId,
           target: remoteUserId,
-          payload: {
-            action: "ice",
-            candidate: event.candidate,
-          },
+          payload: { action: "ice", candidate: event.candidate },
         });
       }
     };
 
-    if (isInitiator) {
+    if (initiator) {
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
-      this.socket.emit("message", {
-        from: this._userId,
+
+      this.sendMessage({
+        from: this.userId,
         target: remoteUserId,
-        payload: {
-          action: "offer",
-          sdp: pc.localDescription,
-        },
+        payload: { action: "offer", sdp: offer },
       });
     }
   }
-}
 
-export { SocketInteraction };
+  private async handleOffer(from: string, sdp: RTCSessionDescriptionInit) {
+    await this.createPeerConnection(from, false);
+
+    const pc = this.peerConnections[from];
+    await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+
+    this.sendMessage({
+      from: this.userId,
+      target: from,
+      payload: { action: "answer", sdp: answer },
+    });
+
+    this.dispatchEvent(new CustomEvent("newPeople"));
+  }
+
+  private async handleAnswer(from: string, sdp: RTCSessionDescriptionInit) {
+    const pc = this.peerConnections[from];
+    if (!pc) return;
+
+    await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+    this.dispatchEvent(new CustomEvent("newPeople"));
+  }
+
+  private async handleIce(from: string, candidate: RTCIceCandidate) {
+    const pc = this.peerConnections[from];
+    if (!pc) return;
+
+    await pc.addIceCandidate(candidate);
+  }
+
+  private removePeer(remoteId: string) {
+    this.peerConnections[remoteId]?.close();
+    delete this.peerConnections[remoteId];
+  }
+
+  private sendMessage(msg: SocketMessage) {
+    this.socket.emit("message", msg);
+  }
+}
