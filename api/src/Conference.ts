@@ -17,6 +17,9 @@ class Conference extends EventTarget {
     socketInteraction.addEventListener("stream", (e) => {
       this.newStream(e);
     });
+    socketInteraction.addEventListener("peopleLeave", (e) => {
+      this.peopleLeave(e);
+    });
   }
 
   publish(stream: Stream) {
@@ -33,12 +36,20 @@ class Conference extends EventTarget {
   getMembers() {}
 
   private newStream(e: any) {
-    console.warn(this.knownStreams);
     if (this.knownStreams.includes(e.detail.stream)) return;
     this.knownStreams.push(e.detail.stream);
     const newevent = new CustomEvent("newstream", {
       detail: {
         stream: e.detail.stream,
+      },
+    });
+    this.dispatchEvent(newevent);
+  }
+
+  private peopleLeave(e: any) {
+    const newevent = new CustomEvent("peopleLeave", {
+      detail: {
+        leaveId: e.detail.leaveId,
       },
     });
     this.dispatchEvent(newevent);

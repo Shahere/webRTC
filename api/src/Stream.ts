@@ -1,12 +1,19 @@
-import { uidGenerator } from "./utils";
+import { uidGenerator, getId } from "./utils";
 
 class Stream {
   mediastream: MediaStream;
   domElement: undefined | HTMLVideoElement;
+  owner: string;
   id: String;
 
-  constructor(mediastream: MediaStream) {
+  /**
+   *
+   * @param mediastream
+   * @param owner "" => ourself, id instead
+   */
+  constructor(mediastream: MediaStream, owner: string) {
     this.mediastream = mediastream;
+    this.owner = owner;
     this.id = uidGenerator();
   }
 
@@ -15,7 +22,7 @@ class Stream {
       video: video,
       audio: audio,
     });
-    let newStream = new Stream(mediastream);
+    let newStream = new Stream(mediastream, "");
     return newStream;
   }
   static getScreen() {}

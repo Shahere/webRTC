@@ -1,5 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { localServerUrl, serverUrl } from "../constants";
+import { setUserId } from "../utils";
 import { Stream } from "../Stream";
 
 interface SocketMessage {
@@ -28,6 +29,7 @@ export class SocketInteraction extends EventTarget {
     return new Promise((resolve, reject) => {
       this.socket.once("connect", () => {
         this._userId = this.socket.id;
+        setUserId(this.socket.id!);
         this.setupSocketListeners();
         resolve();
       });
@@ -101,14 +103,18 @@ export class SocketInteraction extends EventTarget {
         case "close":
           console.log(`[RTC] Peer ${payload.disconnect} disconnected`);
           this.removePeer(payload.disconnect!);
-          this.dispatchEvent(new CustomEvent("peopleLeave"));
+          this.dispatchEvent(
+            new CustomEvent("peopleLeave", {
+              detail: { leaveId: payload.disconnect },
+            })
+          );
           break;
       }
     });
   }
 
   private async createPeerConnection(remoteUserId: string, initiator: boolean) {
-    if (this.peerConnections[remoteUserId]) return;
+    if (this.peerConnections[remoteUserId]) return; //existe deja
 
     const pc = new RTCPeerConnection();
     this.peerConnections[remoteUserId] = pc;
@@ -122,7 +128,7 @@ export class SocketInteraction extends EventTarget {
       console.log("[RTC] Track received");
       this.dispatchEvent(
         new CustomEvent("stream", {
-          detail: { stream: new Stream(event.streams[0]) },
+          detail: { stream: new Stream(event.streams[0], remoteUserId) },
         })
       );
     };

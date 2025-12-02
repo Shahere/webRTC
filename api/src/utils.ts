@@ -23,5 +23,15 @@ function uidGenerator(): String {
   );
 }
 
+let userId: undefined | string = undefined;
+function setUserId(newId: string) {
+  userId = newId;
+}
+function getId() {
+  return userId;
+}
+
+export { setUserId };
+export { getId };
 export { socketInteraction };
 export { uidGenerator };

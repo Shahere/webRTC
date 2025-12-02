@@ -24,10 +24,24 @@ export function InConference(props: any) {
 
   function setListeners() {
     conference.addEventListener("newstream", newstream);
+    conference.addEventListener("peopleLeave", peopleLeave);
   }
+
+  useEffect(() => {
+    console.log(streams);
+  }, [streams]);
 
   function newstream(e: any) {
     setStreams([...streams, e.detail.stream]);
+  }
+
+  function peopleLeave(e: any) {
+    console.log(e.detail.leaveId);
+    setStreams((prev) => {
+      return prev.filter((item) => {
+        return item.owner !== e.detail.leaveId;
+      });
+    });
   }
 
   return (
