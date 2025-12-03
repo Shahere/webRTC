@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { iConferenceContext, ConferenceContext } from "../App";
 import { Conference, Stream } from "meetmesavinien";
 import { StreamDrawer } from "./conference/StreamDrawer";
+import { Controls } from "./conference/Controls";
 
 export interface iStreamsDrawerProps {
   streams: Stream[];
@@ -32,11 +33,18 @@ export function InConference(props: any) {
   }, [streams]);
 
   function newstream(e: any) {
-    setStreams([e.detail.stream, ...streams]);
+    console.log("[FRONT] New stream !");
+    const newStream: Stream = e.detail.stream;
+    setStreams((oldStreams) => {
+      const alreadyExists = oldStreams.some((s) => s.id === newStream.id);
+      if (alreadyExists) return oldStreams;
+
+      return [...oldStreams, newStream];
+    });
   }
 
   function peopleLeave(e: any) {
-    console.log(e.detail.leaveId);
+    console.log("[FRONT] People leave : " + e.detail.leaveId);
     setStreams((prev) => {
       return prev.filter((item) => {
         return item.owner !== e.detail.leaveId;
@@ -46,6 +54,7 @@ export function InConference(props: any) {
 
   return (
     <div className="text-white bg-stone-900 w-full h-screen flex justify-center items-center flex-col">
+      <Controls></Controls>
       <StreamDrawer streams={streams} setStreams={setStreams}></StreamDrawer>
     </div>
   );

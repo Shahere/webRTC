@@ -14,7 +14,7 @@ class Stream {
   constructor(mediastream: MediaStream, owner: string) {
     this.mediastream = mediastream;
     this.owner = owner;
-    this.id = uidGenerator();
+    this.id = owner + "_usermedia";
   }
 
   static async getCamera(video: boolean, audio: boolean): Promise<Stream> {
