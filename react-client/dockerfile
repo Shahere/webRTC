@@ -1,0 +1,12 @@
+FROM nginx:alpine
+
+# Supprime la page par défaut
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copie seulement le build React
+COPY ./build /usr/share/nginx/html
+
+# Configuration Nginx optionnelle (routes React)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
