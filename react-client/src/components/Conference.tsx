@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { iConferenceContext, ConferenceContext } from "../App";
-import { Conference, Stream } from "meetmesavinien";
+import { Conference, Stream } from "mitmi";
 import { StreamDrawer } from "./conference/StreamDrawer";
 import { Controls } from "./conference/Controls";
 

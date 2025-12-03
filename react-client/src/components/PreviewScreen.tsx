@@ -1,4 +1,4 @@
-import { Stream } from "meetmesavinien";
+import { Stream } from "mitmi";
 import React, { useContext, useEffect, useRef } from "react";
 import { iConferenceContext, ConferenceContext } from "../App";
 

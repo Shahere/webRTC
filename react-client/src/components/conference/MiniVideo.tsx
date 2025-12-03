@@ -1,4 +1,4 @@
-import { Stream } from "meetmesavinien";
+import { Stream } from "mitmi";
 import { useRef, useEffect } from "react";
 import { iMiniVideoProps } from "./StreamDrawer";
 

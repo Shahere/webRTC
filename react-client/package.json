@@ -10,7 +10,7 @@
     "@testing-library/user-event": "^13.5.0",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
-    "meetmesavinien": "file:../api",
+    "mitmi": "file:../api",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-scripts": "5.0.1",

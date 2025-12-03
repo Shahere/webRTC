@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { iStreamsDrawerProps } from "../Conference";
 import { MiniVideo } from "./MiniVideo";
-import { Stream } from "meetmesavinien";
+import { Stream } from "mitmi";
 
 export interface iMiniVideoProps {
   stream: Stream;

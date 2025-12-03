@@ -2,7 +2,7 @@ import { createContext, JSX, useState } from "react";
 import "./App.css";
 import { PreviewScreen } from "./components/PreviewScreen";
 import { InConference } from "./components/Conference";
-import { Stream } from "meetmesavinien";
+import { Stream } from "mitmi";
 
 enum States {
   Configuration,
