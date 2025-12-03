@@ -108,6 +108,8 @@ export class SocketInteraction extends EventTarget {
               detail: { leaveId: payload.disconnect },
             })
           );
+          console.log("[Socket] leave" + payload.disconnect);
+
           break;
       }
     });

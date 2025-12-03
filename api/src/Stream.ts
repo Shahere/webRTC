@@ -32,9 +32,17 @@ class Stream {
     domElement.srcObject = this.mediastream;
   }
 
-  detachToElement() {
+  detachToElement(): void {
     if (!this.domElement) return;
     this.domElement.srcObject = null;
+  }
+
+  muteAudio(): void {
+    this.mediastream.getAudioTracks()[0].enabled = false;
+  }
+
+  unmuteAudio(): void {
+    this.mediastream.getAudioTracks()[0].enabled = true;
   }
 }
 

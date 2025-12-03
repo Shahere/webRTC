@@ -1,5 +1,5 @@
 import { Stream } from "meetmesavinien";
-import React, { useContext, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { iConferenceContext, ConferenceContext } from "../App";
 
 /**
@@ -12,6 +12,11 @@ export function PreviewScreen(props: any) {
   const errorNoStreamRef = useRef<HTMLDivElement>(null);
   const { stream, setStream }: iConferenceContext =
     useContext(ConferenceContext);
+
+  useEffect(() => {
+    if (!stream) return;
+    stream.muteAudio();
+  }, [stream]);
 
   async function startLocalStream() {
     if (stream) return;

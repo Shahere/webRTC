@@ -32,7 +32,7 @@ export function InConference(props: any) {
   }, [streams]);
 
   function newstream(e: any) {
-    setStreams([...streams, e.detail.stream]);
+    setStreams([e.detail.stream, ...streams]);
   }
 
   function peopleLeave(e: any) {

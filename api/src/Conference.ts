@@ -52,6 +52,7 @@ class Conference extends EventTarget {
         leaveId: e.detail.leaveId,
       },
     });
+    console.log("[Conf] leave" + e.detail.leaveId);
     this.dispatchEvent(newevent);
   }
 }

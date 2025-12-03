@@ -34,9 +34,9 @@ export function StreamDrawer({ streams, setStreams }: iStreamsDrawerProps) {
         ref={mainVideoRef}
         autoPlay
         playsInline
-        className="w-full h-full object-cover"
+        className="w-screen h-screen object-cover"
       />
-
+      {/* remplacer par w-fit et centrer apres l'element*/}
       {streams.length > 1 && (
         <div className="absolute bottom-0 left-0 w-full h-[25%] bg-black/60 backdrop-blur-sm p-2 flex gap-2 overflow-x-auto">
           {streams.slice(1).map((stream, index) => (
