@@ -1,7 +1,4 @@
-import { SocketInteraction } from "./core/SocketInteraction";
-
-const socketInteraction = new SocketInteraction();
-socketInteraction.init();
+import { Session } from "./Session";
 
 function uidGenerator(): String {
   var S4 = function () {
@@ -31,7 +28,16 @@ function getId() {
   return userId;
 }
 
+let currentSession: Session | undefined = undefined;
+function setCurrentSession(newSession: undefined | Session) {
+  currentSession = newSession;
+}
+function getCurrentSession() {
+  return currentSession;
+}
+
+export { setCurrentSession };
+export { getCurrentSession };
 export { setUserId };
 export { getId };
-export { socketInteraction };
 export { uidGenerator };

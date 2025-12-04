@@ -1,37 +1,51 @@
+import { Contact } from "./Contact";
+import { Session } from "./Session";
 import { Stream } from "./Stream";
-import { socketInteraction } from "./utils";
+import { getCurrentSession } from "./utils";
 
 class Conference extends EventTarget {
   name: string;
   id: number;
   knownStreams: Array<Stream | void>;
+  knownContact: Array<Contact | void>;
+  session: Session;
   constructor(name: string) {
     super();
+    const preSession = getCurrentSession();
+    if (!preSession) {
+      throw new Error("You need to have a session to create conversations");
+    } else {
+      this.session = preSession;
+    }
     this.name = name;
     this.id = 2; //TODO change later for a random
     this.knownStreams = [];
+    this.knownContact = [];
     this.setupListener();
   }
 
   private setupListener() {
-    socketInteraction.addEventListener("stream", (e) => {
+    this.session.socketInteraction.addEventListener("stream", (e) => {
       this.newStream(e);
     });
-    socketInteraction.addEventListener("peopleLeave", (e) => {
+    this.session.socketInteraction.addEventListener("peopleLeave", (e) => {
       this.peopleLeave(e);
+    });
+    this.session.socketInteraction.addEventListener("newPeople", (e) => {
+      this.newPeople(e);
     });
   }
 
   publish(stream: Stream) {
-    socketInteraction.publish(stream);
+    this.session.socketInteraction.publish(stream);
   }
 
   join() {
-    socketInteraction.register(this.id);
+    this.session.socketInteraction.register(this.id);
   }
 
   leave() {
-    socketInteraction.unregister();
+    this.session.socketInteraction.unregister();
   }
   getMembers() {}
 
@@ -53,6 +67,11 @@ class Conference extends EventTarget {
       },
     });
     console.log("[Conf] leave" + e.detail.leaveId);
+    this.dispatchEvent(newevent);
+  }
+
+  private newPeople(e: any) {
+    const newevent = new CustomEvent("newPeople");
     this.dispatchEvent(newevent);
   }
 }

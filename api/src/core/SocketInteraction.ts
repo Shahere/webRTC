@@ -23,7 +23,7 @@ export class SocketInteraction extends EventTarget {
 
   private peerConnections: Record<string, RTCPeerConnection> = {};
 
-  async init(): Promise<void> {
+  async init(): Promise<string> {
     this.socket = io(serverUrl);
 
     return new Promise((resolve, reject) => {
@@ -31,7 +31,7 @@ export class SocketInteraction extends EventTarget {
         this._userId = this.socket.id;
         setUserId(this.socket.id!);
         this.setupSocketListeners();
-        resolve();
+        resolve(this._userId!);
       });
 
       this.socket.once("connect_error", reject);
@@ -40,7 +40,7 @@ export class SocketInteraction extends EventTarget {
   }
 
   get userId(): string {
-    if (!this._userId) throw new Error("User not connected yet");
+    if (!this._userId) throw new Error("Socket not connected yet");
     return this._userId;
   }
 
@@ -49,9 +49,9 @@ export class SocketInteraction extends EventTarget {
   }
 
   register(confId: number) {
-    if (!this.publishStream) {
+    /*if (!this.publishStream) {
       throw new Error("Call publish() before register()");
-    }
+    }*/
 
     this._confId = confId;
 
@@ -122,9 +122,9 @@ export class SocketInteraction extends EventTarget {
     this.peerConnections[remoteUserId] = pc;
 
     // add local tracks
-    this.publishStream?.mediastream.getTracks().forEach((track) => {
+    /*this.publishStream?.mediastream.getTracks().forEach((track) => {
       pc.addTrack(track, this.publishStream!.mediastream);
-    });
+    });*/
 
     pc.ontrack = (event) => {
       console.log("[RTC] Track received");
