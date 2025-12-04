@@ -71,7 +71,6 @@ class Conference extends EventTarget {
   }
 
   private newPeople(e: any) {
-    console.warn(e.detail);
     const newevent = new CustomEvent("newPeople", {
       detail: {
         contact: e.detail.contact,
