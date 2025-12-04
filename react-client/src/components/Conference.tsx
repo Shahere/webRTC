@@ -92,7 +92,7 @@ export function InConference(props: any) {
     console.log("[FRONT] People leave : " + e.detail.leaveId);
     setStreams((prev) => {
       return prev.filter((item) => {
-        return item.owner !== e.detail.leaveId;
+        return item.ownerId !== e.detail.leaveId;
       });
     });
   }
