@@ -3,7 +3,7 @@ import { uidGenerator, getId } from "./utils";
 class Stream {
   mediastream: MediaStream;
   domElement: undefined | HTMLVideoElement;
-  owner: string;
+  ownerId: string;
   id: String;
 
   /**
@@ -11,10 +11,10 @@ class Stream {
    * @param mediastream
    * @param owner "" => ourself, id instead
    */
-  constructor(mediastream: MediaStream, owner: string) {
+  constructor(mediastream: MediaStream, ownerId: string) {
     this.mediastream = mediastream;
-    this.owner = owner;
-    this.id = owner + "_usermedia";
+    this.ownerId = ownerId;
+    this.id = ownerId + "_usermedia";
   }
 
   static async getCamera(video: boolean, audio: boolean): Promise<Stream> {

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { iConferenceContext, ConferenceContext } from "../App";
-import { Conference, Stream } from "mitmi";
+import { Conference, Contact, Stream } from "mitmi";
 import { StreamDrawer } from "./conference/StreamDrawer";
 import { Controls } from "./conference/Controls";
 import { Session } from "mitmi";
@@ -62,8 +62,9 @@ export function InConference(props: any) {
   }, [streams]);
 
   function newPeople(e: any) {
-    console.log("[FRONT] New People !");
-    const newStream: Stream = new Stream(new MediaStream(), "nwepeople");
+    const newContact = new Contact(e.detail.contact.id, e.detail.contact.name);
+    console.log("[FRONT] " + newContact.name + " join the conversation !");
+    const newStream: Stream = new Stream(new MediaStream(), newContact.id);
     setStreams((oldStreams) => {
       const alreadyExists = oldStreams.some((s) => s.id === newStream.id);
       if (alreadyExists) return oldStreams;

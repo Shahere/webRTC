@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { localServerUrl, serverUrl } from "../constants";
-import { setUserId } from "../utils";
+import { getCurrentSession, setUserId } from "../utils";
 import { Stream } from "../Stream";
 
 interface SocketMessage {
@@ -12,6 +12,10 @@ interface SocketMessage {
     candidate?: RTCIceCandidate;
     message?: string;
     disconnect?: string;
+    contact?: {
+      id: string;
+      name: string;
+    };
   };
 }
 
@@ -19,7 +23,6 @@ export class SocketInteraction extends EventTarget {
   private socket!: Socket;
   private _userId?: string;
   private _confId?: number;
-  private publishStream?: Stream;
 
   private peerConnections: Record<string, RTCPeerConnection> = {};
 
@@ -44,9 +47,7 @@ export class SocketInteraction extends EventTarget {
     return this._userId;
   }
 
-  publish(stream: Stream) {
-    this.publishStream = stream;
-  }
+  publish(stream: Stream) {}
 
   register(confId: number) {
     /*if (!this.publishStream) {
@@ -87,12 +88,12 @@ export class SocketInteraction extends EventTarget {
 
         case "offer":
           console.log(`[RTC] Offer received from ${from}`);
-          await this.handleOffer(from, payload.sdp!);
+          await this.handleOffer(from, payload.sdp!, payload.contact);
           break;
 
         case "answer":
           console.log(`[RTC] Answer received from ${from}`);
-          await this.handleAnswer(from, payload.sdp!);
+          await this.handleAnswer(from, payload.sdp!, payload.contact);
           break;
 
         case "ice":
@@ -148,16 +149,25 @@ export class SocketInteraction extends EventTarget {
     if (initiator) {
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
+      let contactToSend = getCurrentSession()?.contact!;
 
       this.sendMessage({
         from: this.userId,
         target: remoteUserId,
-        payload: { action: "offer", sdp: offer },
+        payload: {
+          action: "offer",
+          sdp: offer,
+          contact: contactToSend.toString(),
+        },
       });
     }
   }
 
-  private async handleOffer(from: string, sdp: RTCSessionDescriptionInit) {
+  private async handleOffer(
+    from: string,
+    sdp: RTCSessionDescriptionInit,
+    contact: { id: string; name: string } | undefined
+  ) {
     await this.createPeerConnection(from, false);
 
     const pc = this.peerConnections[from];
@@ -165,22 +175,41 @@ export class SocketInteraction extends EventTarget {
 
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
+    let contactToSend = getCurrentSession()?.contact!;
 
     this.sendMessage({
       from: this.userId,
       target: from,
-      payload: { action: "answer", sdp: answer },
+      payload: {
+        action: "answer",
+        sdp: answer,
+        contact: contactToSend.toString(),
+      },
     });
 
-    this.dispatchEvent(new CustomEvent("newPeople"));
+    const event: CustomEvent = new CustomEvent("newPeople", {
+      detail: {
+        contact: contact,
+      },
+    });
+    this.dispatchEvent(event);
   }
 
-  private async handleAnswer(from: string, sdp: RTCSessionDescriptionInit) {
+  private async handleAnswer(
+    from: string,
+    sdp: RTCSessionDescriptionInit,
+    contact: { id: string; name: string } | undefined
+  ) {
     const pc = this.peerConnections[from];
     if (!pc) return;
 
     await pc.setRemoteDescription(new RTCSessionDescription(sdp));
-    this.dispatchEvent(new CustomEvent("newPeople"));
+    const event: CustomEvent = new CustomEvent("newPeople", {
+      detail: {
+        contact: contact,
+      },
+    });
+    this.dispatchEvent(event);
   }
 
   private async handleIce(from: string, candidate: RTCIceCandidate) {

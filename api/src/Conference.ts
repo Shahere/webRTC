@@ -71,7 +71,13 @@ class Conference extends EventTarget {
   }
 
   private newPeople(e: any) {
-    const newevent = new CustomEvent("newPeople");
+    console.warn(e.detail);
+    const newevent = new CustomEvent("newPeople", {
+      detail: {
+        contact: e.detail.contact,
+      },
+    });
+    console.log("[Conf] join" + e.detail.contact.name);
     this.dispatchEvent(newevent);
   }
 }
