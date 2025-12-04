@@ -9,7 +9,11 @@ export interface iStreamsDrawerProps {
   streams: Stream[];
   setStreams: React.Dispatch<React.SetStateAction<Stream[]>>;
 }
-
+/**
+ *
+ * @param props name
+ * @returns
+ */
 export function InConference(props: any) {
   const { stream, setStream }: iConferenceContext =
     useContext(ConferenceContext);
@@ -24,7 +28,7 @@ export function InConference(props: any) {
 
     async function init() {
       try {
-        const createdSession = await Session.create("Savinien");
+        const createdSession = await Session.create(props.name);
         if (!mounted) return;
         setSession(createdSession);
         const conf = new Conference("test");

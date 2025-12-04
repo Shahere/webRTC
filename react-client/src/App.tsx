@@ -26,6 +26,7 @@ function App() {
     States.Configuration
   );
   const [stream, setStream] = useState<Stream>();
+  const [name, setName] = useState<string>("");
   const value: iConferenceContext = { stream, setStream };
 
   function joinConference() {
@@ -35,9 +36,14 @@ function App() {
   function showStates(): JSX.Element {
     switch (currentState) {
       case States.Configuration:
-        return <PreviewScreen joinConference={joinConference}></PreviewScreen>;
+        return (
+          <PreviewScreen
+            joinConference={joinConference}
+            setName={setName}
+          ></PreviewScreen>
+        );
       case States.Conference:
-        return <InConference></InConference>;
+        return <InConference name={name}></InConference>;
       case States.End:
         return <div>end</div>;
       default:
