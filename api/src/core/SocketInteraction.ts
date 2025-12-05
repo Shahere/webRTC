@@ -2,9 +2,10 @@ import { io, Socket } from "socket.io-client";
 import { localServerUrl, serverUrl } from "../constants";
 import { getCurrentSession, setUserId } from "../utils";
 import { Stream } from "../Stream";
+import { ContactInfo } from "../utils";
 
 interface SocketMessage {
-  from: string;
+  from: ContactInfo;
   target?: string;
   payload: {
     action: "join" | "offer" | "answer" | "ice" | "close";
@@ -12,10 +13,6 @@ interface SocketMessage {
     candidate?: RTCIceCandidate;
     message?: string;
     disconnect?: string;
-    contact?: {
-      id: string;
-      name: string;
-    };
   };
 }
 
@@ -27,7 +24,8 @@ export class SocketInteraction extends EventTarget {
   private peerConnections: Record<string, RTCPeerConnection> = {};
 
   async init(): Promise<string> {
-    this.socket = io(serverUrl);
+    console.warn("init socket");
+    this.socket = io(localServerUrl);
 
     return new Promise((resolve, reject) => {
       this.socket.once("connect", () => {
@@ -55,9 +53,10 @@ export class SocketInteraction extends EventTarget {
     }*/
 
     this._confId = confId;
+    const sender = getCurrentSession()?.contact!;
 
     this.sendMessage({
-      from: this.userId,
+      from: sender.toString(),
       payload: { action: "join" },
     });
 
@@ -88,12 +87,12 @@ export class SocketInteraction extends EventTarget {
 
         case "offer":
           console.log(`[RTC] Offer received from ${from}`);
-          await this.handleOffer(from, payload.sdp!, payload.contact);
+          await this.handleOffer(from, payload.sdp!);
           break;
 
         case "answer":
           console.log(`[RTC] Answer received from ${from}`);
-          await this.handleAnswer(from, payload.sdp!, payload.contact);
+          await this.handleAnswer(from, payload.sdp!);
           break;
 
         case "ice":
@@ -116,16 +115,14 @@ export class SocketInteraction extends EventTarget {
     });
   }
 
-  private async createPeerConnection(remoteUserId: string, initiator: boolean) {
+  private async createPeerConnection(from: ContactInfo, initiator: boolean) {
+    const remoteUserId = from.id;
     if (this.peerConnections[remoteUserId]) return; //existe deja
 
     const pc = new RTCPeerConnection();
     this.peerConnections[remoteUserId] = pc;
 
-    // add local tracks
-    /*this.publishStream?.mediastream.getTracks().forEach((track) => {
-      pc.addTrack(track, this.publishStream!.mediastream);
-    });*/
+    const sender = getCurrentSession()?.contact!;
 
     pc.ontrack = (event) => {
       console.log("[RTC] Track received");
@@ -139,7 +136,7 @@ export class SocketInteraction extends EventTarget {
     pc.onicecandidate = (event) => {
       if (event.candidate) {
         this.sendMessage({
-          from: this.userId,
+          from: sender.toString(),
           target: remoteUserId,
           payload: { action: "ice", candidate: event.candidate },
         });
@@ -149,71 +146,66 @@ export class SocketInteraction extends EventTarget {
     if (initiator) {
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
-      let contactToSend = getCurrentSession()?.contact!;
 
       this.sendMessage({
-        from: this.userId,
+        from: sender.toString(),
         target: remoteUserId,
         payload: {
           action: "offer",
           sdp: offer,
-          contact: contactToSend.toString(),
         },
       });
     }
   }
 
-  private async handleOffer(
-    from: string,
-    sdp: RTCSessionDescriptionInit,
-    contact: { id: string; name: string } | undefined
-  ) {
+  private async handleOffer(from: ContactInfo, sdp: RTCSessionDescriptionInit) {
+    const remoteUserId = from.id;
     await this.createPeerConnection(from, false);
 
-    const pc = this.peerConnections[from];
+    const pc = this.peerConnections[remoteUserId];
     await pc.setRemoteDescription(new RTCSessionDescription(sdp));
 
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
-    let contactToSend = getCurrentSession()?.contact!;
+    let sender = getCurrentSession()?.contact!;
 
     this.sendMessage({
-      from: this.userId,
-      target: from,
+      from: sender.toString(),
+      target: remoteUserId,
       payload: {
         action: "answer",
         sdp: answer,
-        contact: contactToSend.toString(),
       },
     });
 
     const event: CustomEvent = new CustomEvent("newPeople", {
       detail: {
-        contact: contact,
+        contact: from,
       },
     });
     this.dispatchEvent(event);
   }
 
   private async handleAnswer(
-    from: string,
-    sdp: RTCSessionDescriptionInit,
-    contact: { id: string; name: string } | undefined
+    from: ContactInfo,
+    sdp: RTCSessionDescriptionInit
   ) {
-    const pc = this.peerConnections[from];
+    const remoteUserId = from.id;
+    const pc = this.peerConnections[remoteUserId];
     if (!pc) return;
 
     await pc.setRemoteDescription(new RTCSessionDescription(sdp));
     const event: CustomEvent = new CustomEvent("newPeople", {
       detail: {
-        contact: contact,
+        contact: from,
       },
     });
     this.dispatchEvent(event);
   }
 
-  private async handleIce(from: string, candidate: RTCIceCandidate) {
-    const pc = this.peerConnections[from];
+  private async handleIce(from: ContactInfo, candidate: RTCIceCandidate) {
+    const remoteUserId = from.id;
+    const pc = this.peerConnections[remoteUserId];
     if (!pc) return;
 
     await pc.addIceCandidate(candidate);

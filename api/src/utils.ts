@@ -36,6 +36,12 @@ function getCurrentSession() {
   return currentSession;
 }
 
+interface ContactInfo {
+  id: string;
+  name: string;
+}
+
+export { ContactInfo };
 export { setCurrentSession };
 export { getCurrentSession };
 export { setUserId };

@@ -15,6 +15,7 @@ class Session {
   static async create(name: string): Promise<Session> {
     const session = new Session(name);
 
+    console.warn("init");
     const socketId = await session.socketInteraction.init();
     session.contact = new Contact(socketId, name);
     setCurrentSession(session);
