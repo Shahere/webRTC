@@ -17,27 +17,20 @@ class Session {
   }
 
   static async create(name: string): Promise<Session> {
-    console.warn("helo1");
+    // tout le tralala ici c'est pour eviter que React appel 2 fois create et cree 2 socket
+    // Dans un cas de Singleton classique, Session est bien retourné mais pas la bonne car la socket et donc le contact ne sont pas bien initialisés
     if (Session.session && Session.session.contact) {
-      console.warn("all good");
-
       setCurrentSession(Session.session);
       return Session.session;
     }
 
     if (Session.initializing) {
-      console.warn("init en cours");
-
       return await Session.initializing;
     }
 
     Session.initializing = (async () => {
-      console.warn("first time");
-
       const session = new Session(name);
       Session.session = session;
-
-      console.warn("init");
 
       const socketId = await session.socketInteraction.init();
       session.contact = new Contact(socketId, name);

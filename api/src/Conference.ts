@@ -38,7 +38,6 @@ class Conference extends EventTarget {
   }
 
   join() {
-    console.warn("join");
     this.session.socketInteraction.register(this.id);
   }
 

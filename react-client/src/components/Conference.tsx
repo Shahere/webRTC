@@ -29,7 +29,6 @@ export function InConference(props: any) {
     async function init() {
       try {
         const createdSession = await Session.create(props.name);
-        console.warn(createdSession);
         if (!mounted) return;
         setSession(createdSession);
         const conf = new Conference("test", createdSession);
