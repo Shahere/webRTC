@@ -10,15 +10,21 @@ export function MiniVideo({ stream, changeMainStream }: iMiniVideoProps) {
   }, [stream]);
 
   return (
-    <video
-      onClick={() => {
-        changeMainStream(stream.id);
-      }}
-      ref={ref}
-      autoPlay
-      playsInline
-      muted
-      className="rounded-lg object-cover border border-white/30"
-    />
+    <div className="relative h-full w-[300px] rounded-lg border border-white/30 overflow-hidden">
+      <video
+        onClick={() => {
+          changeMainStream(stream.id);
+        }}
+        ref={ref}
+        autoPlay
+        playsInline
+        muted
+        className="h-full w-auto min-w-full object-cover"
+      />
+
+      <div className="absolute bottom-2 right-2 bg-black/60 text-white text-sm px-3 py-1 rounded-md backdrop-blur-sm">
+        Hello world
+      </div>
+    </div>
   );
 }
