@@ -11,10 +11,15 @@ export interface iMiniVideoProps {
 
 export function StreamDrawer({ streams, setStreams }: iStreamsDrawerProps) {
   const mainVideoRef = useRef<HTMLVideoElement>(null);
+  const mainVideoNameRef = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
     if (streams.length > 0 && mainVideoRef.current) {
-      mainVideoRef.current.srcObject = streams[0].mediastream;
+      //mainVideoRef.current.srcObject = streams[0].mediastream;
+      streams[0]!.attachToElement(mainVideoRef.current);
+    }
+    if (streams.length > 0 && mainVideoNameRef.current) {
+      mainVideoNameRef.current.innerHTML = streams[0].ownerName;
     }
   }, [streams]);
 
@@ -28,6 +33,16 @@ export function StreamDrawer({ streams, setStreams }: iStreamsDrawerProps) {
     );
   }
 
+  function mainVideoNamePosition() {
+    if (streams.length == 1) {
+      return "bottom-[2%]";
+    } else if (streams.length > 1) {
+      return "bottom-[30%]";
+    } else {
+      return "";
+    }
+  }
+
   return (
     <div className="relative w-screen h-screen bg-black">
       <video
@@ -36,6 +51,13 @@ export function StreamDrawer({ streams, setStreams }: iStreamsDrawerProps) {
         playsInline
         className="w-screen h-screen object-cover"
       />
+      <div
+        className={`absolute right-[5%] ${mainVideoNamePosition()} bottom-[30%] size-fit px-[2%] py-[1%] rounded-2xl font-bold text-xl bg-gray-800/40 backdrop-blur-[4px] z-[99]`}
+      >
+        <p ref={mainVideoNameRef} className="white">
+          Name
+        </p>
+      </div>
       {/* remplacer par w-fit et centrer apres l'element*/}
       {streams.length > 1 && (
         <div className="absolute bottom-0 left-0 w-full h-[25%] bg-black/60 backdrop-blur-sm p-2 flex gap-2 overflow-x-auto">

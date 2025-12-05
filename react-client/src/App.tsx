@@ -39,6 +39,7 @@ function App() {
         return (
           <PreviewScreen
             joinConference={joinConference}
+            name={name}
             setName={setName}
           ></PreviewScreen>
         );

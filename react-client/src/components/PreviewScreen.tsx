@@ -10,6 +10,8 @@ import { iConferenceContext, ConferenceContext } from "../App";
 export function PreviewScreen(props: any) {
   const localStreamRef = useRef<HTMLVideoElement>(null);
   const errorNoStreamRef = useRef<HTMLDivElement>(null);
+  const nameRef = useRef<HTMLTextAreaElement>(null);
+
   const { stream, setStream }: iConferenceContext =
     useContext(ConferenceContext);
 
@@ -40,6 +42,12 @@ export function PreviewScreen(props: any) {
       errorNoStreamRef.current!.style.display = "block";
       return;
     }
+    setStream((prev) => {
+      const newLocalStream = prev;
+      if (!newLocalStream) return prev;
+      newLocalStream.ownerName = props.name;
+      return newLocalStream;
+    });
     props.joinConference();
   }
 
@@ -76,6 +84,7 @@ export function PreviewScreen(props: any) {
         </div>
         <div className="flex col justify-center p-5">
           <textarea
+            ref={nameRef}
             className="resize-none block p-2.5 w-full h-10 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="Your name"
             onChange={(e) => {

@@ -4,6 +4,7 @@ class Stream {
   mediastream: MediaStream;
   domElement: undefined | HTMLVideoElement;
   ownerId: string;
+  ownerName: string;
   id: String;
 
   /**
@@ -11,9 +12,10 @@ class Stream {
    * @param mediastream
    * @param owner "" => ourself, id instead
    */
-  constructor(mediastream: MediaStream, ownerId: string) {
+  constructor(mediastream: MediaStream, ownerId: string, ownerName: string) {
     this.mediastream = mediastream;
     this.ownerId = ownerId;
+    this.ownerName = ownerName;
     this.id = ownerId + "_usermedia";
   }
 
@@ -22,7 +24,7 @@ class Stream {
       video: video,
       audio: audio,
     });
-    let newStream = new Stream(mediastream, "");
+    let newStream = new Stream(mediastream, "", "");
     return newStream;
   }
   static getScreen() {}

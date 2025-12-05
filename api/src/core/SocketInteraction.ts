@@ -115,6 +115,7 @@ export class SocketInteraction extends EventTarget {
 
   private async createPeerConnection(from: ContactInfo, initiator: boolean) {
     const remoteUserId = from.id;
+    const remoteUserName = from.name;
     if (this.peerConnections[remoteUserId]) return; //existe deja
 
     const pc = new RTCPeerConnection();
@@ -126,7 +127,9 @@ export class SocketInteraction extends EventTarget {
       console.log("[RTC] Track received");
       this.dispatchEvent(
         new CustomEvent("stream", {
-          detail: { stream: new Stream(event.streams[0], remoteUserId) },
+          detail: {
+            stream: new Stream(event.streams[0], remoteUserId, remoteUserName),
+          },
         })
       );
     };
