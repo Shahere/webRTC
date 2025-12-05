@@ -24,7 +24,6 @@ export class SocketInteraction extends EventTarget {
   private peerConnections: Record<string, RTCPeerConnection> = {};
 
   async init(): Promise<string> {
-    console.warn("init socket");
     this.socket = io(localServerUrl);
 
     return new Promise((resolve, reject) => {
@@ -53,7 +52,6 @@ export class SocketInteraction extends EventTarget {
     }*/
 
     this._confId = confId;
-    console.warn(getCurrentSession());
     const sender = getCurrentSession()?.contact!;
     this.sendMessage({
       from: sender.toString(),
