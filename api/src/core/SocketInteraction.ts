@@ -53,8 +53,8 @@ export class SocketInteraction extends EventTarget {
     }*/
 
     this._confId = confId;
+    console.warn(getCurrentSession());
     const sender = getCurrentSession()?.contact!;
-
     this.sendMessage({
       from: sender.toString(),
       payload: { action: "join" },

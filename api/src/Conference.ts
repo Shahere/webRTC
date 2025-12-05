@@ -9,14 +9,11 @@ class Conference extends EventTarget {
   knownStreams: Array<Stream | void>;
   knownContact: Array<Contact | void>;
   session: Session;
-  constructor(name: string) {
+
+  constructor(name: string, session: Session) {
     super();
-    const preSession = getCurrentSession();
-    if (!preSession) {
-      throw new Error("You need to have a session to create conversations");
-    } else {
-      this.session = preSession;
-    }
+    this.session = session;
+
     this.name = name;
     this.id = 2; //TODO change later for a random
     this.knownStreams = [];
@@ -41,6 +38,7 @@ class Conference extends EventTarget {
   }
 
   join() {
+    console.warn("join");
     this.session.socketInteraction.register(this.id);
   }
 
