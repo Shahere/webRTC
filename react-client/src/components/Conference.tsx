@@ -45,6 +45,9 @@ export function InConference(props: any) {
     conference.join();
     setListeners(conference);
 
+    console.log("[FRONT] Publish local stream");
+    conference.publish(stream!);
+
     return () => {
       conference.leave();
     };

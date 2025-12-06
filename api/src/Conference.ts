@@ -34,6 +34,9 @@ class Conference extends EventTarget {
   }
 
   publish(stream: Stream) {
+    if (this.knownStreams.includes(stream)) return;
+
+    this.knownStreams.push(stream);
     this.session.socketInteraction.publish(stream);
   }
 

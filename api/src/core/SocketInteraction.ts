@@ -20,6 +20,7 @@ export class SocketInteraction extends EventTarget {
   private socket!: Socket;
   private _userId?: string;
   private _confId?: number;
+  private localStream?: Stream;
 
   private peerConnections: Record<string, RTCPeerConnection> = {};
 
@@ -44,7 +45,24 @@ export class SocketInteraction extends EventTarget {
     return this._userId;
   }
 
-  publish(stream: Stream) {}
+  publish(stream: Stream) {
+    this.localStream = stream;
+
+    console.warn(this.peerConnections);
+    Object.values(this.peerConnections).forEach((pc) => {
+      this.attachStreamToPeer(pc);
+    });
+
+    console.log("[RTC] Stream published to all peers");
+  }
+
+  private attachStreamToPeer(pc: RTCPeerConnection) {
+    if (!this.localStream) return;
+
+    this.localStream.mediastream.getTracks().forEach((track) => {
+      pc.addTrack(track, this.localStream!.mediastream);
+    });
+  }
 
   register(confId: number) {
     /*if (!this.publishStream) {
@@ -120,6 +138,10 @@ export class SocketInteraction extends EventTarget {
 
     const pc = new RTCPeerConnection();
     this.peerConnections[remoteUserId] = pc;
+
+    if (this.localStream) {
+      this.attachStreamToPeer(pc);
+    }
 
     const sender = getCurrentSession()?.contact!;
 
