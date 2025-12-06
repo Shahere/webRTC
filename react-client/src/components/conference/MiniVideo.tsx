@@ -10,7 +10,7 @@ export function MiniVideo({ stream, changeMainStream }: iMiniVideoProps) {
   }, [stream]);
 
   return (
-    <div className="relative h-full w-[300px] rounded-lg border border-white/30 overflow-hidden">
+    <div className="relative h-full w-[350px] rounded-lg border border-white/30 overflow-hidden">
       <video
         onClick={() => {
           changeMainStream(stream.id);
@@ -23,7 +23,7 @@ export function MiniVideo({ stream, changeMainStream }: iMiniVideoProps) {
       />
 
       <div className="absolute bottom-2 right-2 bg-black/60 text-white text-sm px-3 py-1 rounded-md backdrop-blur-sm">
-        Hello world
+        {stream.ownerName}
       </div>
     </div>
   );

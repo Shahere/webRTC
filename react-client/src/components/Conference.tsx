@@ -24,12 +24,9 @@ export function InConference(props: any) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
-
     async function init() {
       try {
         const createdSession = await Session.create(props.name);
-        if (!mounted) return;
         setSession(createdSession);
         const conf = new Conference("test", createdSession);
         setConference(conf);
@@ -40,9 +37,7 @@ export function InConference(props: any) {
     }
 
     init();
-    return () => {
-      mounted = false;
-    };
+    return () => {};
   }, []);
 
   useEffect(() => {
