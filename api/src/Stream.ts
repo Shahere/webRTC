@@ -1,4 +1,10 @@
+import { Conference } from "./Conference";
 import { uidGenerator, getId } from "./utils";
+
+export interface StreamParams {
+  audio: boolean;
+  video: boolean;
+}
 
 class Stream {
   mediastream: MediaStream;
@@ -6,6 +12,9 @@ class Stream {
   ownerId: string;
   ownerName: string;
   id: String;
+  //If undefined, its a localstream otherwise the stream is publish
+  conferencePublish?: Conference;
+  params: StreamParams;
 
   /**
    *
@@ -17,6 +26,8 @@ class Stream {
     this.ownerId = ownerId;
     this.ownerName = ownerName;
     this.id = ownerId + "_usermedia";
+    this.params = { audio: true, video: false };
+    this.setListeners();
   }
 
   static async getCamera(video: boolean, audio: boolean): Promise<Stream> {
@@ -39,12 +50,36 @@ class Stream {
     this.domElement.srcObject = null;
   }
 
+  /**
+   * If the stream is published (so its yours) :
+   *  - video will be disabled for everyone
+   * If the stream is not published (its yours but not publish, or other ppl stream):
+   *  - video will be disabled for you only
+   */
+  muteVideo() {
+    this.params.video = false;
+    if (this.conferencePublish) {
+      //your publish stream
+      this.conferencePublish.session.socketInteraction.unpublishTrack(this);
+    }
+    this.mediastream.getVideoTracks()[0].enabled = false;
+  }
+
   muteAudio(): void {
     this.mediastream.getAudioTracks()[0].enabled = false;
   }
 
   unmuteAudio(): void {
     this.mediastream.getAudioTracks()[0].enabled = true;
+  }
+
+  private setListeners() {
+    console.warn("ready to mute");
+    this.mediastream.getVideoTracks().forEach((track) => {
+      track.addEventListener("mute", () => {
+        console.warn("MUTE");
+      });
+    });
   }
 }
 

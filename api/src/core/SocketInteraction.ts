@@ -1,7 +1,7 @@
 import { io, Socket } from "socket.io-client";
 import { localServerUrl, serverUrl } from "../constants";
 import { getCurrentSession, setUserId } from "../utils";
-import { Stream } from "../Stream";
+import { Stream, StreamParams } from "../Stream";
 import { ContactInfo } from "../utils";
 
 interface SocketMessage {
@@ -21,6 +21,7 @@ export class SocketInteraction extends EventTarget {
   private _userId?: string;
   private _confId?: number;
   private localStream?: Stream;
+  private senders: Array<RTCRtpSender> = [];
 
   private peerConnections: Record<string, RTCPeerConnection> = {};
 
@@ -48,7 +49,6 @@ export class SocketInteraction extends EventTarget {
   publish(stream: Stream) {
     this.localStream = stream;
 
-    console.warn(this.peerConnections);
     Object.values(this.peerConnections).forEach((pc) => {
       this.attachStreamToPeer(pc);
     });
@@ -56,11 +56,59 @@ export class SocketInteraction extends EventTarget {
     console.log("[RTC] Stream published to all peers");
   }
 
+  unpublish(stream: Stream) {
+    if (this.localStream != stream) throw new Error("this is not your stream");
+    this.localStream = undefined;
+
+    Object.values(this.peerConnections).forEach((pc) => {
+      this.removeStreamToPeer(pc);
+    });
+
+    console.log("[RTC] Unpublish stream");
+  }
+
+  unpublishTrack(stream: Stream) {
+    if (this.localStream != stream) throw new Error("this is not your stream");
+
+    Object.values(this.peerConnections).forEach((pc) => {
+      if (!stream.params.audio) {
+        // si false on desactive
+        this.removeTrackToPeer(pc, stream.mediastream.getAudioTracks()[0]);
+      }
+      if (!stream.params.video) {
+        this.removeTrackToPeer(pc, stream.mediastream.getVideoTracks()[0]);
+      }
+    });
+
+    console.log("[RTC] Unpublish track");
+  }
+
   private attachStreamToPeer(pc: RTCPeerConnection) {
     if (!this.localStream) return;
 
     this.localStream.mediastream.getTracks().forEach((track) => {
-      pc.addTrack(track, this.localStream!.mediastream);
+      const sender = pc.addTrack(track, this.localStream!.mediastream);
+      this.senders.push(sender);
+    });
+  }
+
+  private removeStreamToPeer(pc: RTCPeerConnection) {
+    if (!this.localStream) return;
+
+    this.senders.forEach((sender) => {
+      pc.removeTrack(sender);
+    });
+  }
+
+  private removeTrackToPeer(pc: RTCPeerConnection, track: MediaStreamTrack) {
+    if (!this.localStream) return;
+
+    this.senders.forEach((sender) => {
+      if (sender.track == track) {
+        const transceivers = pc.getTransceivers();
+        const videoTrack = transceivers[1];
+        videoTrack.direction = "recvonly";
+      }
     });
   }
 

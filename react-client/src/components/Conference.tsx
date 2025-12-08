@@ -65,7 +65,7 @@ export function InConference(props: any) {
 
   function newPeople(e: any) {
     const newContact = new Contact(e.detail.contact.id, e.detail.contact.name);
-    console.log("[FRONT] " + newContact.name + " join the conversation !");
+    console.log("[FRONT] " + newContact.name + " join the conference !");
     const newStream: Stream = new Stream(
       new MediaStream(),
       newContact.id,

@@ -37,7 +37,20 @@ class Conference extends EventTarget {
     if (this.knownStreams.includes(stream)) return;
 
     this.knownStreams.push(stream);
+    stream.conferencePublish = this;
     this.session.socketInteraction.publish(stream);
+  }
+
+  unpublish(stream: Stream) {
+    if (!this.knownStreams.includes(stream)) return;
+
+    try {
+      this.session.socketInteraction.unpublish(stream);
+      stream.conferencePublish = undefined;
+    } catch (error) {
+      return;
+    }
+    this.knownStreams.push(stream);
   }
 
   join() {
