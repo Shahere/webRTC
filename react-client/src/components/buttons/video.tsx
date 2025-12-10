@@ -1,13 +1,21 @@
 import { Video, VideoOff } from "lucide-react";
 import { ConferenceContext, iConferenceContext } from "../../App";
-import { useContext } from "react";
+import React, { useContext } from "react";
+export interface VideoButtonParams {
+  muted: boolean;
+  onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+}
 
-export default function VideoToggleButton({ muted = false }) {
+export default function VideoToggleButton({
+  muted,
+  onClick,
+}: VideoButtonParams) {
   const { stream, setStream }: iConferenceContext =
     useContext(ConferenceContext);
 
-  function disableVideo() {
+  function disableVideo(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     stream?.muteVideo();
+    onClick(e);
   }
 
   return (
@@ -22,7 +30,9 @@ export default function VideoToggleButton({ muted = false }) {
         }
         text-white
       `}
-      onClick={disableVideo}
+      onClick={(e) => {
+        disableVideo(e);
+      }}
     >
       {muted ? <VideoOff size={40} /> : <Video size={40} />}
     </button>
