@@ -66,6 +66,10 @@ class Stream {
   }
 
   muteAudio(): void {
+    this.params.audio = false;
+    if (this.conferencePublish) {
+      this.conferencePublish.session.socketInteraction.unpublishTrack(this);
+    }
     this.mediastream.getAudioTracks()[0].enabled = false;
   }
 
