@@ -20,7 +20,10 @@ export function Controls() {
   return (
     <div className="absolute z-[99] top-0 left-0 w-screen p-[2%]">
       <div className="flex justify-center gap-10">
-        <MicToggleButton muted={true} onClick={audioClick}></MicToggleButton>
+        <MicToggleButton
+          muted={audioMuted}
+          onClick={audioClick}
+        ></MicToggleButton>
         <VideoToggleButton
           muted={videoMuted}
           onClick={videoClick}
