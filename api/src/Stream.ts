@@ -60,15 +60,24 @@ class Stream {
     this.params.video = false;
     if (this.conferencePublish) {
       //your publish stream
-      this.conferencePublish.session.socketInteraction.unpublishTrack(this);
+      this.conferencePublish.session.socketInteraction.setConstraint(this);
     }
     this.mediastream.getVideoTracks()[0].enabled = false;
+  }
+
+  unmuteVideo() {
+    this.params.video = true;
+    if (this.conferencePublish) {
+      //your publish stream
+      this.conferencePublish.session.socketInteraction.setConstraint(this);
+    }
+    this.mediastream.getVideoTracks()[0].enabled = true;
   }
 
   muteAudio(): void {
     this.params.audio = false;
     if (this.conferencePublish) {
-      this.conferencePublish.session.socketInteraction.unpublishTrack(this);
+      this.conferencePublish.session.socketInteraction.setConstraint(this);
     }
     this.mediastream.getAudioTracks()[0].enabled = false;
   }

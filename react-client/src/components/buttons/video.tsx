@@ -14,7 +14,12 @@ export default function VideoToggleButton({
     useContext(ConferenceContext);
 
   function disableVideo(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    stream?.muteVideo();
+    if (muted) {
+      stream?.unmuteVideo();
+    } else {
+      stream?.muteVideo();
+    }
+
     onClick(e);
   }
 

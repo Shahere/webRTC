@@ -67,20 +67,29 @@ export class SocketInteraction extends EventTarget {
     console.log("[RTC] Unpublish stream");
   }
 
-  unpublishTrack(stream: Stream) {
+  /**
+   *
+   * @param stream Stream have stream.params, use to set constraint on the peer
+   */
+  setConstraint(stream: Stream) {
     if (this.localStream != stream) throw new Error("this is not your stream");
 
     Object.values(this.peerConnections).forEach((pc) => {
       if (!stream.params.audio) {
         // si false on desactive
-        this.removeTrackToPeer(pc, stream.mediastream.getAudioTracks()[0]);
+        this.disableTrackToPeer(pc, stream.mediastream.getAudioTracks()[0]);
+      } else {
+        // si true on reactive
+        this.enableTrackToPeer(pc, stream.mediastream.getAudioTracks()[0]);
       }
       if (!stream.params.video) {
-        this.removeTrackToPeer(pc, stream.mediastream.getVideoTracks()[0]);
+        this.disableTrackToPeer(pc, stream.mediastream.getVideoTracks()[0]);
+      } else {
+        this.enableTrackToPeer(pc, stream.mediastream.getVideoTracks()[0]);
       }
     });
 
-    console.log("[RTC] Unpublish track");
+    console.log("[RTC] Set constraint");
   }
 
   private attachStreamToPeer(pc: RTCPeerConnection) {
@@ -100,7 +109,7 @@ export class SocketInteraction extends EventTarget {
     });
   }
 
-  private removeTrackToPeer(pc: RTCPeerConnection, track: MediaStreamTrack) {
+  private disableTrackToPeer(pc: RTCPeerConnection, track: MediaStreamTrack) {
     if (!this.localStream) return;
 
     this.senders.forEach((sender) => {
@@ -108,6 +117,18 @@ export class SocketInteraction extends EventTarget {
         const transceivers = pc.getTransceivers();
         const videoTrack = transceivers[1];
         videoTrack.direction = "recvonly";
+      }
+    });
+  }
+
+  private enableTrackToPeer(pc: RTCPeerConnection, track: MediaStreamTrack) {
+    if (!this.localStream) return;
+
+    this.senders.forEach((sender) => {
+      if (sender.track == track) {
+        const transceivers = pc.getTransceivers();
+        const videoTrack = transceivers[1];
+        videoTrack.direction = "sendrecv";
       }
     });
   }
