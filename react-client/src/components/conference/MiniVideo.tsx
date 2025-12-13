@@ -18,7 +18,6 @@ export function MiniVideo({ stream, changeMainStream }: iMiniVideoProps) {
         ref={ref}
         autoPlay
         playsInline
-        muted
         className="h-full w-auto min-w-full object-cover"
       />
 
