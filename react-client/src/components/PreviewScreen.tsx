@@ -17,7 +17,7 @@ export function PreviewScreen(props: any) {
 
   useEffect(() => {
     if (!stream) return;
-    stream.muteAudio();
+    //stream.muteAudio();
   }, [stream]);
 
   async function startLocalStream() {
