@@ -1,5 +1,5 @@
 import { io, Socket } from "socket.io-client";
-import { localServerUrl, serverUrl } from "../constants";
+import { serverUrl } from "../constants";
 import { getCurrentSession, setUserId } from "../utils";
 import { Stream, StreamParams } from "../Stream";
 import { ContactInfo } from "../utils";
