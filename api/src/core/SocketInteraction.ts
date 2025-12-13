@@ -26,7 +26,7 @@ export class SocketInteraction extends EventTarget {
   private peerConnections: Record<string, RTCPeerConnection> = {};
 
   async init(): Promise<string> {
-    this.socket = io(localServerUrl);
+    this.socket = io(serverUrl);
 
     return new Promise((resolve, reject) => {
       this.socket.once("connect", () => {
