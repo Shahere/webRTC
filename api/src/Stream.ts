@@ -30,6 +30,10 @@ class Stream {
     this.setListeners();
   }
 
+  isLocal(): boolean {
+    return this.ownerId === "";
+  }
+
   static async getCamera(video: boolean, audio: boolean): Promise<Stream> {
     let mediastream = await navigator.mediaDevices.getUserMedia({
       video: video,
@@ -43,6 +47,10 @@ class Stream {
   attachToElement(domElement: HTMLVideoElement): void {
     this.domElement = domElement;
     domElement.srcObject = this.mediastream;
+
+    if (this.isLocal()) {
+      this.disableAudio();
+    }
   }
 
   detachToElement(): void {
@@ -88,6 +96,21 @@ class Stream {
       this.conferencePublish.session.socketInteraction.setConstraint(this);
     }
     this.mediastream.getAudioTracks()[0].enabled = true;
+  }
+
+  /**
+   * This function exist to avoir Larsen.
+   * You need to call here when a localstream is started.
+   */
+  disableAudio(): void {
+    if (!this.isLocal()) return;
+    if (!this.domElement) return;
+
+    // Important: cette ligne n'affecte pas l'envoi audio
+    this.domElement.muted = true;
+    this.domElement.volume = 0;
+
+    console.warn("disable audio for stream : ", this.ownerId, this.ownerName);
   }
 
   private setListeners() {
