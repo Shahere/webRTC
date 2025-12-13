@@ -83,6 +83,10 @@ class Stream {
   }
 
   unmuteAudio(): void {
+    this.params.audio = true;
+    if (this.conferencePublish) {
+      this.conferencePublish.session.socketInteraction.setConstraint(this);
+    }
     this.mediastream.getAudioTracks()[0].enabled = true;
   }
 

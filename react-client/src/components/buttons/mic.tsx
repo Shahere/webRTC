@@ -12,7 +12,11 @@ export default function MicToggleButton({ muted, onClick }: AudioButtonParams) {
     useContext(ConferenceContext);
 
   function disableAudio(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    stream?.muteAudio();
+    if (muted) {
+      stream?.unmuteAudio();
+    } else {
+      stream?.muteAudio();
+    }
     onClick(e);
   }
   return (
