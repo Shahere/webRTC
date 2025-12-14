@@ -27,7 +27,6 @@ class Stream {
     this.ownerName = ownerName;
     this.id = ownerId + "_usermedia";
     this.params = { audio: true, video: false };
-    this.setListeners();
   }
 
   isLocal(): boolean {
@@ -111,15 +110,6 @@ class Stream {
     this.domElement.volume = 0;
 
     console.warn("disable audio for stream : ", this.ownerId, this.ownerName);
-  }
-
-  private setListeners() {
-    console.warn("ready to mute");
-    this.mediastream.getVideoTracks().forEach((track) => {
-      track.addEventListener("mute", () => {
-        console.warn("MUTE");
-      });
-    });
   }
 }
 
