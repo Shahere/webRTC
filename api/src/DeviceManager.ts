@@ -19,9 +19,12 @@ export class DeviceManager {
     return DeviceManager._instance;
   }
 
-  async getAvailableDevices(): Promise<MediaDeviceInfo[]> {
-    await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-    return await navigator.mediaDevices.enumerateDevices();
+  async getAvailableDevices(
+    kind: "videoinput" | "audioinput"
+  ): Promise<MediaDeviceInfo[]> {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    console.warn(devices);
+    return devices.filter((device) => device.kind === kind);
   }
 
   getCurrentDevices() {

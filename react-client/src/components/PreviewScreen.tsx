@@ -12,6 +12,9 @@ export function PreviewScreen(props: any) {
   const errorNoStreamRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLTextAreaElement>(null);
 
+  const [audioInput, setAudioInput] = useState<MediaDeviceInfo[]>([]);
+  const [videoInput, setVideoInput] = useState<MediaDeviceInfo[]>([]);
+
   const {
     stream,
     setStream,
@@ -22,14 +25,17 @@ export function PreviewScreen(props: any) {
   useEffect(() => {
     let deviceManager = DeviceManager.createInstance();
     setDeviceManager(deviceManager);
-    deviceManager.getAvailableDevices().then((dev) => {
-      console.log(dev);
-    });
   }, []);
 
   useEffect(() => {
     if (!stream) return;
-    //stream.muteAudio();
+    if (!deviceManager) return;
+    deviceManager.getAvailableDevices("audioinput").then((audioDevices) => {
+      setAudioInput(audioDevices);
+    });
+    deviceManager.getAvailableDevices("videoinput").then((videoDevices) => {
+      setVideoInput(videoDevices);
+    });
   }, [stream]);
 
   async function startLocalStream() {
@@ -93,6 +99,24 @@ export function PreviewScreen(props: any) {
           >
             Stop stream
           </button>
+        </div>
+        <div className="flex justify-center space-between mt-[5%]">
+          {audioInput.length > 0 && (
+            <select className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+              {audioInput.map((mediaDeviceInfo, key) => (
+                <option key={key} value={key}>
+                  {mediaDeviceInfo.label}
+                </option>
+              ))}
+            </select>
+          )}
+          {videoInput.length > 0 && (
+            <select className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+              {videoInput.map((mediaDeviceInfo, key) => (
+                <option value={key}>{mediaDeviceInfo.label}</option>
+              ))}
+            </select>
+          )}
         </div>
         <div className="flex col justify-center p-5">
           <textarea
