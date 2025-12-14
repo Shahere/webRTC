@@ -1,4 +1,4 @@
-import { Stream } from "mitmi";
+import { DeviceManager, Stream } from "mitmi";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { iConferenceContext, ConferenceContext } from "../App";
 
@@ -12,8 +12,20 @@ export function PreviewScreen(props: any) {
   const errorNoStreamRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLTextAreaElement>(null);
 
-  const { stream, setStream }: iConferenceContext =
-    useContext(ConferenceContext);
+  const {
+    stream,
+    setStream,
+    deviceManager,
+    setDeviceManager,
+  }: iConferenceContext = useContext(ConferenceContext);
+
+  useEffect(() => {
+    let deviceManager = DeviceManager.createInstance();
+    setDeviceManager(deviceManager);
+    deviceManager.getAvailableDevices().then((dev) => {
+      console.log(dev);
+    });
+  }, []);
 
   useEffect(() => {
     if (!stream) return;

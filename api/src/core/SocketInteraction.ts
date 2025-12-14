@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { serverUrl } from "../constants";
-import { getCurrentSession, setUserId } from "../utils";
+import { getCurrentSession } from "../utils";
 import { Stream, StreamParams } from "../Stream";
 import { ContactInfo } from "../utils";
 
@@ -31,7 +31,6 @@ export class SocketInteraction extends EventTarget {
     return new Promise((resolve, reject) => {
       this.socket.once("connect", () => {
         this._userId = this.socket.id;
-        setUserId(this.socket.id!);
         this.setupSocketListeners();
         resolve(this._userId!);
       });

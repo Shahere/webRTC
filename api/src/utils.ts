@@ -1,4 +1,5 @@
 import { Session } from "./Session";
+import { Stream } from "./Stream";
 
 function uidGenerator(): String {
   var S4 = function () {
@@ -20,20 +21,20 @@ function uidGenerator(): String {
   );
 }
 
-let userId: undefined | string = undefined;
-function setUserId(newId: string) {
-  userId = newId;
-}
-function getId() {
-  return userId;
-}
-
 let currentSession: Session | undefined = undefined;
 function setCurrentSession(newSession: undefined | Session) {
   currentSession = newSession;
 }
 function getCurrentSession() {
   return currentSession;
+}
+
+let localStream: Stream | undefined = undefined;
+function setLocalStream(newStream: undefined | Stream) {
+  localStream = newStream;
+}
+function getLocalStream() {
+  return localStream;
 }
 
 interface ContactInfo {
@@ -44,6 +45,6 @@ interface ContactInfo {
 export { ContactInfo };
 export { setCurrentSession };
 export { getCurrentSession };
-export { setUserId };
-export { getId };
+export { setLocalStream };
+export { getLocalStream };
 export { uidGenerator };

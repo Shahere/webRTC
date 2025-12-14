@@ -1,5 +1,5 @@
 import { Conference } from "./Conference";
-import { uidGenerator, getId } from "./utils";
+import { setLocalStream } from "./utils";
 
 export interface StreamParams {
   audio: boolean;
@@ -33,12 +33,19 @@ class Stream {
     return this.ownerId === "";
   }
 
+  /**
+   * Will update lastest camera stream known (for DeviceMananger)
+   * @param video
+   * @param audio
+   * @returns
+   */
   static async getCamera(video: boolean, audio: boolean): Promise<Stream> {
     let mediastream = await navigator.mediaDevices.getUserMedia({
       video: video,
       audio: audio,
     });
     let newStream = new Stream(mediastream, "", "");
+    setLocalStream(newStream);
     return newStream;
   }
   static getScreen() {}
