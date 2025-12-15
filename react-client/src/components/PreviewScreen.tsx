@@ -76,11 +76,13 @@ export function PreviewScreen(props: any) {
       </h2>
 
       <div className="">
-        <video
-          className={`${stream == null ? "size-0" : ""}`}
-          autoPlay
-          ref={localStreamRef}
-        ></video>
+        <div className="flex justify-center">
+          <video
+            className={`${stream == null ? "size-0" : ""}`}
+            autoPlay
+            ref={localStreamRef}
+          ></video>
+        </div>
         <div ref={errorNoStreamRef} className="hidden text-red-800">
           Vous devez avoir une camera pour rejoindre
         </div>
@@ -100,9 +102,14 @@ export function PreviewScreen(props: any) {
             Stop stream
           </button>
         </div>
-        <div className="flex justify-center space-between mt-[5%]">
+        <div className="flex justify-center mt-[5%] px-[10%]">
           {audioInput.length > 0 && (
-            <select className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <select
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              onChange={(e) => {
+                console.log(e);
+              }}
+            >
               {audioInput.map((mediaDeviceInfo, key) => (
                 <option key={key} value={key}>
                   {mediaDeviceInfo.label}
@@ -111,14 +118,19 @@ export function PreviewScreen(props: any) {
             </select>
           )}
           {videoInput.length > 0 && (
-            <select className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <select
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              onChange={(e) => {
+                console.log(e);
+              }}
+            >
               {videoInput.map((mediaDeviceInfo, key) => (
                 <option value={key}>{mediaDeviceInfo.label}</option>
               ))}
             </select>
           )}
         </div>
-        <div className="flex col justify-center p-5">
+        <div className="flex col justify-center p-5 px-[10%]">
           <textarea
             ref={nameRef}
             className="resize-none block p-2.5 w-full h-10 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
