@@ -36,6 +36,8 @@ export function PreviewScreen(props: any) {
     deviceManager.getAvailableDevices("videoinput").then((videoDevices) => {
       setVideoInput(videoDevices);
     });
+
+    stream.attachToElement(localStreamRef.current!);
   }, [stream]);
 
   async function startLocalStream() {
@@ -67,6 +69,13 @@ export function PreviewScreen(props: any) {
       return newLocalStream;
     });
     props.joinConference();
+  }
+
+  async function changeAudioInput(e: React.ChangeEvent<HTMLSelectElement>) {
+    const selectedDevice = audioInput[Number(e.target.value)];
+    if (!deviceManager) return;
+    const newStream = await deviceManager.changeAudioDevice(selectedDevice);
+    setStream(newStream);
   }
 
   return (
@@ -106,9 +115,7 @@ export function PreviewScreen(props: any) {
           {audioInput.length > 0 && (
             <select
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              onChange={(e) => {
-                console.log(e);
-              }}
+              onChange={changeAudioInput}
             >
               {audioInput.map((mediaDeviceInfo, key) => (
                 <option key={key} value={key}>

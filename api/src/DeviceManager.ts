@@ -23,7 +23,6 @@ export class DeviceManager {
     kind: "videoinput" | "audioinput"
   ): Promise<MediaDeviceInfo[]> {
     const devices = await navigator.mediaDevices.enumerateDevices();
-    console.warn(devices);
     return devices.filter((device) => device.kind === kind);
   }
 
@@ -33,6 +32,11 @@ export class DeviceManager {
       videoInput: this.currentVideoInput,
       audioOutput: this.currentAudioOutput,
     };
+  }
+
+  async changeAudioDevice(newAudioDevice: MediaDeviceInfo) {
+    let newStream = await Stream.getCamera(true, true, newAudioDevice.deviceId);
+    return newStream;
   }
 
   private setListeners() {

@@ -39,11 +39,18 @@ class Stream {
    * @param audio
    * @returns
    */
-  static async getCamera(video: boolean, audio: boolean): Promise<Stream> {
-    let mediastream = await navigator.mediaDevices.getUserMedia({
+  static async getCamera(
+    video: boolean,
+    audio: boolean,
+    audioDeviceId?: string
+  ): Promise<Stream> {
+    const constraints = {
       video: video,
-      audio: audio,
-    });
+      audio: audioDeviceId ? { deviceId: { ideal: audioDeviceId } } : audio,
+    };
+
+    let mediastream = await navigator.mediaDevices.getUserMedia(constraints);
+
     let newStream = new Stream(mediastream, "", "");
     setLocalStream(newStream);
     return newStream;
