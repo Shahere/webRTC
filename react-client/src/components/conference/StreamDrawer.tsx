@@ -15,12 +15,22 @@ export function StreamDrawer({ streams, setStreams }: iStreamsDrawerProps) {
 
   useEffect(() => {
     if (streams.length > 0 && mainVideoRef.current) {
-      //mainVideoRef.current.srcObject = streams[0].mediastream;
       streams[0]!.attachToElement(mainVideoRef.current);
     }
     if (streams.length > 0 && mainVideoNameRef.current) {
       mainVideoNameRef.current.innerHTML = streams[0].ownerName;
     }
+
+    //Look for our localStream
+    streams.forEach((stream, index) => {
+      if (stream.ownerId === "") {
+        stream.disableAudio();
+      } else {
+        stream.enableAudio();
+      }
+    });
+
+    console.log(streams);
   }, [streams]);
 
   function changeMainStream(streamId: String) {

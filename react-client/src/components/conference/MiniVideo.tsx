@@ -6,7 +6,7 @@ export function MiniVideo({ stream, changeMainStream }: iMiniVideoProps) {
   const ref = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (ref.current) ref.current.srcObject = stream.mediastream;
+    if (ref.current) stream.attachToElement(ref.current);
   }, [stream]);
 
   return (

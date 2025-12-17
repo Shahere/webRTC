@@ -117,14 +117,26 @@ class Stream {
    * You need to call here when a localstream is started.
    */
   disableAudio(): void {
-    if (!this.isLocal()) return;
     if (!this.domElement) return;
 
     // Important: cette ligne n'affecte pas l'envoi audio
     this.domElement.muted = true;
     this.domElement.volume = 0;
 
-    console.warn("disable audio for stream : ", this.ownerId, this.ownerName);
+    console.warn(this.ownerId, this.domElement.volume, this.domElement.muted);
+  }
+
+  /**
+   * TODO do better
+   */
+  enableAudio(): void {
+    if (!this.domElement) return;
+
+    // Important: cette ligne n'affecte pas l'envoi audio
+    this.domElement.muted = false;
+    this.domElement.volume = 1;
+
+    console.warn(this.ownerId, this.domElement.volume, this.domElement.muted);
   }
 }
 

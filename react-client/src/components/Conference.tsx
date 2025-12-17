@@ -60,7 +60,7 @@ export function InConference(props: any) {
   }
 
   useEffect(() => {
-    console.log(streams);
+    //console.log(streams);
   }, [streams]);
 
   function newPeople(e: any) {
