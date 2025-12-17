@@ -42,10 +42,11 @@ class Stream {
   static async getCamera(
     video: boolean,
     audio: boolean,
-    audioDeviceId?: string
+    audioDeviceId?: string,
+    videoDeviceId?: string
   ): Promise<Stream> {
     const constraints = {
-      video: video,
+      video: audioDeviceId ? { deviceId: { ideal: videoDeviceId } } : video,
       audio: audioDeviceId ? { deviceId: { ideal: audioDeviceId } } : audio,
     };
 

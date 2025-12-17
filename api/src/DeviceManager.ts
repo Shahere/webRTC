@@ -35,7 +35,22 @@ export class DeviceManager {
   }
 
   async changeAudioDevice(newAudioDevice: MediaDeviceInfo) {
-    let newStream = await Stream.getCamera(true, true, newAudioDevice.deviceId);
+    let newStream = await Stream.getCamera(
+      true,
+      true,
+      newAudioDevice.deviceId,
+      undefined
+    );
+    return newStream;
+  }
+
+  async changeVideoDevice(newVideoDevice: MediaDeviceInfo) {
+    let newStream = await Stream.getCamera(
+      true,
+      true,
+      undefined,
+      newVideoDevice.deviceId
+    );
     return newStream;
   }
 
