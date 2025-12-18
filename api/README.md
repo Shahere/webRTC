@@ -55,3 +55,9 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 [js-shield]: https://shields.io/badge/JavaScript-F7DF1E?logo=JavaScript&logoColor=000&style=flat-square
 [ts-shield]: https://shields.io/badge/TypeScript-3178C6?logo=TypeScript&logoColor=FFF&style=flat-square
 [npm-shield]: https://img.shields.io/npm/v/mitmi
+
+### TODO
+
+- Add a dedicated logger
+- Do a better README
+- Create documentation
