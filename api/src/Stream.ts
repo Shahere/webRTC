@@ -45,13 +45,20 @@ class Stream {
     audioDeviceId?: string,
     videoDeviceId?: string
   ): Promise<Stream> {
-    const constraints = {
-      video: audioDeviceId ? { deviceId: { ideal: videoDeviceId } } : video,
-      audio: audioDeviceId ? { deviceId: { ideal: audioDeviceId } } : audio,
-    };
+    let constraints: any;
+    let mediastream: MediaStream;
+    try {
+      constraints = {
+        video: videoDeviceId ? { deviceId: { ideal: videoDeviceId } } : video,
+        audio: audioDeviceId ? { deviceId: { ideal: audioDeviceId } } : audio,
+      };
 
-    let mediastream = await navigator.mediaDevices.getUserMedia(constraints);
-
+      mediastream = await navigator.mediaDevices.getUserMedia(constraints);
+    } catch (e) {
+      const message = "Camera non disponible, veuillez essayer une autre";
+      alert(message);
+      throw message;
+    }
     let newStream = new Stream(mediastream, "", "");
     setLocalStream(newStream);
     return newStream;
