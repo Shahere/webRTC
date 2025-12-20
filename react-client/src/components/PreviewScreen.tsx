@@ -86,12 +86,12 @@ export function PreviewScreen(props: any) {
   }
 
   return (
-    <div className="text-white bg-stone-900 w-full h-screen flex justify-center items-center flex-col">
+    <div className="text-white bg-stone-900 w-full min-h-screen pt-10 pb-10 flex items-center flex-col">
       <h2 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
         Preview
       </h2>
 
-      <div className="">
+      <div className="mt-5">
         <div className="flex justify-center">
           <video
             className={`${stream == null ? "size-0" : ""}`}
