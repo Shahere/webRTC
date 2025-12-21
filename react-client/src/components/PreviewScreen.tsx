@@ -10,6 +10,7 @@ import { iConferenceContext, ConferenceContext } from "../App";
 export function PreviewScreen(props: any) {
   const localStreamRef = useRef<HTMLVideoElement>(null);
   const errorNoStreamRef = useRef<HTMLDivElement>(null);
+  const errorNoNameRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLTextAreaElement>(null);
 
   const [audioInput, setAudioInput] = useState<MediaDeviceInfo[]>([]);
@@ -62,6 +63,10 @@ export function PreviewScreen(props: any) {
       errorNoStreamRef.current!.style.display = "block";
       return;
     }
+    if (!props.name) {
+      errorNoNameRef.current!.style.display = "block";
+      return;
+    }
     setStream((prev) => {
       const newLocalStream = prev;
       if (!newLocalStream) return prev;
@@ -69,6 +74,11 @@ export function PreviewScreen(props: any) {
       return newLocalStream;
     });
     props.joinConference();
+  }
+
+  function changeName(changeVal: string) {
+    errorNoNameRef.current!.style.display = "none";
+    props.setName(changeVal);
   }
 
   async function changeAudioInput(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -99,8 +109,13 @@ export function PreviewScreen(props: any) {
             ref={localStreamRef}
           ></video>
         </div>
-        <div ref={errorNoStreamRef} className="hidden text-red-800">
-          Vous devez avoir une camera pour rejoindre
+        <div className="flex flex-col justify-center items-center p-5">
+          <div ref={errorNoStreamRef} className="hidden text-red-800">
+            Vous devez avoir une camera pour rejoindre
+          </div>
+          <div ref={errorNoNameRef} className="hidden text-red-800">
+            Vous devez avoir un nom pour rejoindre
+          </div>
         </div>
         <div className="flex justify-center space-between mt-[5%]">
           <button
@@ -125,7 +140,7 @@ export function PreviewScreen(props: any) {
               onChange={changeAudioInput}
             >
               {audioInput.map((mediaDeviceInfo, key) => (
-                <option key={key} value={key}>
+                <option key={mediaDeviceInfo.deviceId}>
                   {mediaDeviceInfo.label}
                 </option>
               ))}
@@ -137,7 +152,9 @@ export function PreviewScreen(props: any) {
               onChange={changeVideoInput}
             >
               {videoInput.map((mediaDeviceInfo, key) => (
-                <option value={key}>{mediaDeviceInfo.label}</option>
+                <option key={mediaDeviceInfo.deviceId}>
+                  {mediaDeviceInfo.label}
+                </option>
               ))}
             </select>
           )}
@@ -148,7 +165,7 @@ export function PreviewScreen(props: any) {
             className="resize-none block p-2.5 w-full h-10 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             placeholder="Your name"
             onChange={(e) => {
-              props.setName(e.target.value);
+              changeName(e.target.value);
             }}
           ></textarea>
         </div>
