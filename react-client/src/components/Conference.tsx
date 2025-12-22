@@ -1,20 +1,18 @@
 import { useContext, useEffect, useState } from "react";
-import { iConferenceContext, ConferenceContext } from "../App";
+import { ConferenceContext } from "../App";
 import { Conference, Contact, Stream } from "mitmi";
 import { StreamDrawer } from "./conference/StreamDrawer";
 import { Controls } from "./conference/Controls";
 import { Session } from "mitmi";
+import { iInConference } from "../interfaces";
+import { iConferenceContext } from "../interfaces";
 
-export interface iStreamsDrawerProps {
-  streams: Stream[];
-  setStreams: React.Dispatch<React.SetStateAction<Stream[]>>;
-}
 /**
  *
  * @param props name
  * @returns
  */
-export function InConference(props: any) {
+export function InConference({ name }: iInConference) {
   const { stream, setStream }: iConferenceContext =
     useContext(ConferenceContext);
 
@@ -26,7 +24,7 @@ export function InConference(props: any) {
   useEffect(() => {
     async function init() {
       try {
-        const createdSession = await Session.create(props.name);
+        const createdSession = await Session.create(name);
         setSession(createdSession);
         const conf = new Conference("test", createdSession);
         setConference(conf);

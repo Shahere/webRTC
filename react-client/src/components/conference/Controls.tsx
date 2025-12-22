@@ -1,11 +1,8 @@
-import { useContext, useState } from "react";
-import { iConferenceContext, ConferenceContext } from "../../App";
-import MicToggleButton, { AudioButtonParams } from "../buttons/mic";
-import VideoToggleButton, { VideoButtonParams } from "../buttons/video";
+import { useState } from "react";
+import MicToggleButton from "../buttons/mic";
+import VideoToggleButton from "../buttons/video";
 
 export function Controls() {
-  const { stream, setStream }: iConferenceContext =
-    useContext(ConferenceContext);
   const [videoMuted, setVideoMuted] = useState(false);
   const [audioMuted, setAudioMuted] = useState(false);
 

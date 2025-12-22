@@ -1,6 +1,5 @@
-import { Stream } from "mitmi";
 import { useRef, useEffect } from "react";
-import { iMiniVideoProps } from "./StreamDrawer";
+import { iMiniVideoProps } from "../../interfaces";
 
 export function MiniVideo({ stream, changeMainStream }: iMiniVideoProps) {
   const ref = useRef<HTMLVideoElement>(null);

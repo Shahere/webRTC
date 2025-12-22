@@ -3,6 +3,7 @@ import "./App.css";
 import { PreviewScreen } from "./components/PreviewScreen";
 import { InConference } from "./components/Conference";
 import { DeviceManager, Stream } from "mitmi";
+import { iConferenceContext } from "./interfaces";
 
 enum States {
   Configuration,
@@ -11,14 +12,6 @@ enum States {
 }
 
 // Un moyen pour mettre stream sans undefined ?
-export interface iConferenceContext {
-  stream?: Stream;
-  setStream: React.Dispatch<React.SetStateAction<Stream | undefined>>;
-  deviceManager?: DeviceManager;
-  setDeviceManager: React.Dispatch<
-    React.SetStateAction<DeviceManager | undefined>
-  >;
-}
 
 export const ConferenceContext = createContext<iConferenceContext>({
   stream: undefined,
@@ -50,9 +43,9 @@ function App() {
       case States.Configuration:
         return (
           <PreviewScreen
-            joinConference={joinConference}
             name={name}
             setName={setName}
+            joinConference={joinConference}
           ></PreviewScreen>
         );
       case States.Conference:

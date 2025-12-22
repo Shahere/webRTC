@@ -1,13 +1,19 @@
 import { DeviceManager, Stream } from "mitmi";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { iConferenceContext, ConferenceContext } from "../App";
+import { ConferenceContext } from "../App";
+import { iPreviewScreen } from "../interfaces";
+import { iConferenceContext } from "../interfaces";
 
 /**
  *
  * @param props joinConference,
  * @returns
  */
-export function PreviewScreen(props: any) {
+export function PreviewScreen({
+  name,
+  setName,
+  joinConference,
+}: iPreviewScreen) {
   const localStreamRef = useRef<HTMLVideoElement>(null);
   const errorNoStreamRef = useRef<HTMLDivElement>(null);
   const errorNoNameRef = useRef<HTMLDivElement>(null);
@@ -58,27 +64,27 @@ export function PreviewScreen(props: any) {
     setStream(undefined);
   }
 
-  function joinConference() {
+  function joinConferenceAction() {
     if (!stream) {
       errorNoStreamRef.current!.style.display = "block";
       return;
     }
-    if (!props.name) {
+    if (!name) {
       errorNoNameRef.current!.style.display = "block";
       return;
     }
     setStream((prev) => {
       const newLocalStream = prev;
       if (!newLocalStream) return prev;
-      newLocalStream.ownerName = props.name;
+      newLocalStream.ownerName = name;
       return newLocalStream;
     });
-    props.joinConference();
+    joinConference();
   }
 
   function changeName(changeVal: string) {
     errorNoNameRef.current!.style.display = "none";
-    props.setName(changeVal);
+    setName(changeVal);
   }
 
   async function changeAudioInput(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -172,7 +178,7 @@ export function PreviewScreen(props: any) {
         <div className="flex justify-center">
           <button
             id="stopstream"
-            onClick={joinConference}
+            onClick={joinConferenceAction}
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
           >
             Join conférence

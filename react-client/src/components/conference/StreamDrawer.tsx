@@ -1,13 +1,6 @@
 import { useEffect, useRef } from "react";
-import { iStreamsDrawerProps } from "../Conference";
+import { iStreamsDrawerProps } from "../../interfaces";
 import { MiniVideo } from "./MiniVideo";
-import { Stream } from "mitmi";
-
-export interface iMiniVideoProps {
-  stream: Stream;
-  changeMainStream: Function;
-  key: Number;
-}
 
 export function StreamDrawer({ streams, setStreams }: iStreamsDrawerProps) {
   const mainVideoRef = useRef<HTMLVideoElement>(null);
@@ -44,7 +37,7 @@ export function StreamDrawer({ streams, setStreams }: iStreamsDrawerProps) {
   }
 
   function mainVideoNamePosition() {
-    if (streams.length == 1) {
+    if (streams.length === 1) {
       return "bottom-[2%]";
     } else if (streams.length > 1) {
       return "bottom-[30%]";
@@ -62,7 +55,7 @@ export function StreamDrawer({ streams, setStreams }: iStreamsDrawerProps) {
         className="w-screen h-screen object-cover"
       />
       <div
-        className={`absolute right-[5%] ${mainVideoNamePosition()} bottom-[30%] size-fit px-[2%] py-[1%] rounded-2xl font-bold text-xl bg-gray-800/40 backdrop-blur-[4px] z-[99]`}
+        className={`absolute right-[5%] ${mainVideoNamePosition()} size-fit px-[2%] py-[1%] rounded-2xl font-bold text-xl bg-gray-800/40 backdrop-blur-[4px] z-[99]`}
       >
         <p ref={mainVideoNameRef} className="white">
           Name

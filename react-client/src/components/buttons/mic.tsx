@@ -1,6 +1,7 @@
 import { Mic, MicOff } from "lucide-react";
-import { iConferenceContext, ConferenceContext } from "../../App";
+import { ConferenceContext } from "../../App";
 import { useContext } from "react";
+import { iConferenceContext } from "../../interfaces";
 
 export interface AudioButtonParams {
   muted: boolean;
@@ -8,8 +9,7 @@ export interface AudioButtonParams {
 }
 
 export default function MicToggleButton({ muted, onClick }: AudioButtonParams) {
-  const { stream, setStream }: iConferenceContext =
-    useContext(ConferenceContext);
+  const { stream }: iConferenceContext = useContext(ConferenceContext);
 
   function disableAudio(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     if (muted) {
