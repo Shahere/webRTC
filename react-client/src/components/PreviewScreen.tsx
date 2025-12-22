@@ -146,7 +146,7 @@ export function PreviewScreen({
               onChange={changeAudioInput}
             >
               {audioInput.map((mediaDeviceInfo, key) => (
-                <option key={mediaDeviceInfo.deviceId}>
+                <option key={mediaDeviceInfo.deviceId} value={key}>
                   {mediaDeviceInfo.label}
                 </option>
               ))}
@@ -158,7 +158,7 @@ export function PreviewScreen({
               onChange={changeVideoInput}
             >
               {videoInput.map((mediaDeviceInfo, key) => (
-                <option key={mediaDeviceInfo.deviceId}>
+                <option key={mediaDeviceInfo.deviceId} value={key}>
                   {mediaDeviceInfo.label}
                 </option>
               ))}
