@@ -45,6 +45,10 @@ export function PreviewScreen({
     });
 
     stream.attachToElement(localStreamRef.current!);
+
+    return () => {
+      stream.detachToElement();
+    };
   }, [stream]);
 
   async function startLocalStream() {
