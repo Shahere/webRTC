@@ -1,4 +1,4 @@
-import { createContext, JSX, useState } from "react";
+import { createContext, JSX, useState, useEffect } from "react";
 import "./App.css";
 import { PreviewScreen } from "./components/PreviewScreen";
 import { InConference } from "./components/Conference";
@@ -33,6 +33,10 @@ function App() {
     deviceManager,
     setDeviceManager,
   };
+
+  useEffect(() => {
+    document.title = "Mitmi website";
+  }, []);
 
   function joinConference() {
     setCurrentState(States.Conference);
