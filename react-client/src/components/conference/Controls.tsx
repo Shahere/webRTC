@@ -1,6 +1,7 @@
 import { useState } from "react";
 import MicToggleButton from "../buttons/mic";
 import VideoToggleButton from "../buttons/video";
+import ParametersButton from "../buttons/cog";
 import HangupButton from "../buttons/hangup";
 import { iControls } from "../../interfaces";
 
@@ -16,6 +17,10 @@ export function Controls({ leaveConference }: iControls) {
     setAudioMuted((prev) => !prev);
   }
 
+  function parameters(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    console.log("hihi");
+  }
+
   return (
     <div className="fixed z-[99] top-0 left-0 w-screen p-[2%]">
       <div className="flex justify-center gap-10">
@@ -27,6 +32,7 @@ export function Controls({ leaveConference }: iControls) {
           muted={videoMuted}
           onClick={videoClick}
         ></VideoToggleButton>
+        <ParametersButton onClick={parameters}></ParametersButton>
         <HangupButton leaveConference={leaveConference}></HangupButton>
       </div>
     </div>
