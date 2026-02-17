@@ -4,6 +4,7 @@ import VideoToggleButton from "../buttons/video";
 import ParametersButton from "../buttons/cog";
 import HangupButton from "../buttons/hangup";
 import { iControls } from "../../interfaces";
+import { Parameters } from "./Parameters";
 
 export function Controls({ leaveConference }: iControls) {
   const [videoMuted, setVideoMuted] = useState(false);
@@ -22,19 +23,22 @@ export function Controls({ leaveConference }: iControls) {
   }
 
   return (
-    <div className="fixed z-[99] top-0 left-0 w-screen p-[2%]">
-      <div className="flex justify-center gap-10">
-        <MicToggleButton
-          muted={audioMuted}
-          onClick={audioClick}
-        ></MicToggleButton>
-        <VideoToggleButton
-          muted={videoMuted}
-          onClick={videoClick}
-        ></VideoToggleButton>
-        <ParametersButton onClick={parameters}></ParametersButton>
-        <HangupButton leaveConference={leaveConference}></HangupButton>
+    <div>
+      <div className="fixed z-[99] top-0 left-0 w-screen p-[2%]">
+        <div className="flex justify-center gap-10">
+          <MicToggleButton
+            muted={audioMuted}
+            onClick={audioClick}
+          ></MicToggleButton>
+          <VideoToggleButton
+            muted={videoMuted}
+            onClick={videoClick}
+          ></VideoToggleButton>
+          <ParametersButton onClick={parameters}></ParametersButton>
+          <HangupButton leaveConference={leaveConference}></HangupButton>
+        </div>
       </div>
+      <Parameters></Parameters>
     </div>
   );
 }
