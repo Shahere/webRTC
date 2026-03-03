@@ -61,7 +61,7 @@ webrtc.savinienbarbotaud.fr
 - npm run build
 
 - command in react-client/ : docker build -t webrtc-website .
-- command : docker compouse up -d 
+- command : docker compose up -d 
 
 
 
