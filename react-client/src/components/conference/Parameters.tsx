@@ -1,7 +1,8 @@
 import { DeviceManager } from "mitmi";
 import { useEffect, useState } from "react";
+import { iConferenceParameters } from "../../interfaces";
 
-export function Parameters() {
+export function Parameters({ openParameters }: iConferenceParameters) {
   const [audioInput, setAudioInput] = useState<MediaDeviceInfo[]>([]);
   const [videoInput, setVideoInput] = useState<MediaDeviceInfo[]>([]);
 

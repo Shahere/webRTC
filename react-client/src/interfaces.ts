@@ -44,6 +44,10 @@ export interface iLeaveConference {
   leaveConference: Function;
 }
 
+export interface iConferenceParameters {
+  openParameters: boolean;
+}
+
 export interface iDisplayConference {
   displayConference: DisplayConference;
   setDisplayConference: React.Dispatch<React.SetStateAction<DisplayConference>>;

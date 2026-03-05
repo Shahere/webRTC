@@ -9,6 +9,7 @@ import { Parameters } from "./Parameters";
 export function Controls({ leaveConference }: iControls) {
   const [videoMuted, setVideoMuted] = useState(false);
   const [audioMuted, setAudioMuted] = useState(false);
+  const [openParameters, setOpenParameters] = useState(false);
 
   function videoClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     setVideoMuted((prev) => !prev);
@@ -19,7 +20,7 @@ export function Controls({ leaveConference }: iControls) {
   }
 
   function parameters(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    console.log("hihi");
+    setOpenParameters((prev) => !prev);
   }
 
   return (
@@ -38,7 +39,7 @@ export function Controls({ leaveConference }: iControls) {
           <HangupButton leaveConference={leaveConference}></HangupButton>
         </div>
       </div>
-      <Parameters></Parameters>
+      <Parameters openParameters={openParameters}></Parameters>
     </div>
   );
 }
