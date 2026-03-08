@@ -25,11 +25,11 @@ export function Parameters({ openParameters }: iConferenceParameters) {
     console.log(e.target.value);
   }
 
+  //TODO Add transition
   return (
     <div
-      className={`z-[99999] h-screen w-[30%] absolute ${openParameters ? "right-0" : "right-[-30%]"} top-0 bg-gray-800 flex justify-center`}
+      className={`z-[99999] h-screen w-[30%] absolute ${openParameters ? "right-0" : "right-[-30%]"} top-0 bg-gray-800 flex justify-center transition-all`}
     >
-      //TODO Add transition
       <div className="mt-[10%] p-[7%]">
         <h1 className="text-4xl font-bold text-heading mb-[7%]">Parameters</h1>
         <div className="flex flex-col gap-5">

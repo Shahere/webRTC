@@ -29,7 +29,7 @@ export function InConference({ name, leaveConference }: iInConference) {
   const [conference, setConference] = useState<Conference | null>(null);
   const [loading, setLoading] = useState(true);
   const [displayConference, setDisplayConference] = useState(
-    DisplayConference.Drawer
+    DisplayConference.Drawer,
   );
 
   const conferenceRef = useRef<Conference | null>(null);
@@ -93,7 +93,7 @@ export function InConference({ name, leaveConference }: iInConference) {
     const newStream: Stream = new Stream(
       new MediaStream(),
       newContact.id,
-      newContact.name
+      newContact.name,
     );
     setStreams((oldStreams) => {
       const alreadyExists = oldStreams.some((s) => s.id === newStream.id);
@@ -141,7 +141,7 @@ export function InConference({ name, leaveConference }: iInConference) {
   }
 
   return (
-    <div className="text-white bg-stone-900 w-full h-full flex justify-center items-center flex-col">
+    <div className="text-white bg-stone-900 w-full h-full flex justify-center items-center flex-col overflow-x-hidden overflow-y-hidden">
       <Controls leaveConference={leaveConferenceAction}></Controls>
       <SelectDisplayConference
         displayConference={displayConference}

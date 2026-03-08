@@ -39,7 +39,9 @@ export function Controls({ leaveConference }: iControls) {
           <HangupButton leaveConference={leaveConference}></HangupButton>
         </div>
       </div>
-      <Parameters openParameters={openParameters}></Parameters>
+      <div className="relative w-screen">
+        <Parameters openParameters={openParameters}></Parameters>
+      </div>
     </div>
   );
 }
