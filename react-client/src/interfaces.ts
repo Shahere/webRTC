@@ -48,6 +48,10 @@ export interface iConferenceParameters {
   openParameters: boolean;
 }
 
+export interface iOnClick {
+  onClick: Function;
+}
+
 export interface iDisplayConference {
   displayConference: DisplayConference;
   setDisplayConference: React.Dispatch<React.SetStateAction<DisplayConference>>;

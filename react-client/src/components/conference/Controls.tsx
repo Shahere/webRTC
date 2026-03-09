@@ -3,6 +3,7 @@ import MicToggleButton from "../buttons/mic";
 import VideoToggleButton from "../buttons/video";
 import ParametersButton from "../buttons/cog";
 import HangupButton from "../buttons/hangup";
+import ShareScreen from "../buttons/shareScreen";
 import { iControls } from "../../interfaces";
 import { Parameters } from "./Parameters";
 
@@ -23,6 +24,12 @@ export function Controls({ leaveConference }: iControls) {
     setOpenParameters((prev) => !prev);
   }
 
+  function shareScreenClick(
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) {
+    console.log("prfkkfrp");
+  }
+
   return (
     <div>
       <div className="fixed z-[99] top-0 left-0 w-screen p-[2%]">
@@ -35,6 +42,7 @@ export function Controls({ leaveConference }: iControls) {
             muted={videoMuted}
             onClick={videoClick}
           ></VideoToggleButton>
+          <ShareScreen onClick={shareScreenClick}></ShareScreen>
           <ParametersButton onClick={parameters}></ParametersButton>
           <HangupButton leaveConference={leaveConference}></HangupButton>
         </div>

@@ -1,0 +1,20 @@
+import { PhoneOff } from "lucide-react";
+import { iOnClick } from "../../interfaces";
+import { MonitorUp } from "lucide-react";
+
+export default function ShareScreen({ onClick }: iOnClick) {
+  return (
+    <button
+      className="
+        p-3 rounded-full shadow 
+        transition-all duration-200
+        bg-gray-800 hover:bg-gray-700
+        "
+      onClick={(e) => {
+        onClick();
+      }}
+    >
+      <MonitorUp size={40} />
+    </button>
+  );
+}
