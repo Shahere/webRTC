@@ -1,4 +1,3 @@
-import { PhoneOff } from "lucide-react";
 import { iOnClick } from "../../interfaces";
 import { MonitorUp } from "lucide-react";
 

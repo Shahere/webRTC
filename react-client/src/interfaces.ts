@@ -38,6 +38,7 @@ export interface iMiniVideoPanelProps {
 
 export interface iControls {
   leaveConference: Function;
+  publishScreenShare: Function;
 }
 
 export interface iLeaveConference {

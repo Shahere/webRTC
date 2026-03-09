@@ -81,6 +81,11 @@ export function InConference({ name, leaveConference }: iInConference) {
     leaveConference();
   }
 
+  function publishScreenShare(newScreen: Stream) {
+    if (!conference) return;
+    conference.publish(newScreen);
+  }
+
   function setListeners(conf: Conference) {
     conf.addEventListener("newstream", newstream);
     conf.addEventListener("newPeople", newPeople);
@@ -142,7 +147,10 @@ export function InConference({ name, leaveConference }: iInConference) {
 
   return (
     <div className="text-white bg-stone-900 w-full h-full flex justify-center items-center flex-col overflow-x-hidden overflow-y-hidden">
-      <Controls leaveConference={leaveConferenceAction}></Controls>
+      <Controls
+        leaveConference={leaveConferenceAction}
+        publishScreenShare={publishScreenShare}
+      ></Controls>
       <SelectDisplayConference
         displayConference={displayConference}
         setDisplayConference={setDisplayConference}

@@ -6,8 +6,9 @@ import HangupButton from "../buttons/hangup";
 import ShareScreen from "../buttons/shareScreen";
 import { iControls } from "../../interfaces";
 import { Parameters } from "./Parameters";
+import { Stream } from "mitmi";
 
-export function Controls({ leaveConference }: iControls) {
+export function Controls({ leaveConference, publishScreenShare }: iControls) {
   const [videoMuted, setVideoMuted] = useState(false);
   const [audioMuted, setAudioMuted] = useState(false);
   const [openParameters, setOpenParameters] = useState(false);
@@ -24,10 +25,15 @@ export function Controls({ leaveConference }: iControls) {
     setOpenParameters((prev) => !prev);
   }
 
-  function shareScreenClick(
+  async function shareScreenClick(
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) {
-    console.log("prfkkfrp");
+    try {
+      const newScreenShare = await Stream.getScreen();
+      publishScreenShare(newScreenShare);
+    } catch (error) {
+      alert(error);
+    }
   }
 
   return (
