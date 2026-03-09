@@ -5,9 +5,11 @@ import { iConferenceParameters } from "../../interfaces";
 export function Parameters({ openParameters }: iConferenceParameters) {
   const [audioInput, setAudioInput] = useState<MediaDeviceInfo[]>([]);
   const [videoInput, setVideoInput] = useState<MediaDeviceInfo[]>([]);
+  const [deviceManager, setDeviceManager] = useState<DeviceManager>();
 
   useEffect(() => {
     const deviceManager = DeviceManager.createInstance();
+    setDeviceManager(deviceManager);
 
     deviceManager.getAvailableDevices("audioinput").then((audioDevices) => {
       setAudioInput(audioDevices);
@@ -18,14 +20,17 @@ export function Parameters({ openParameters }: iConferenceParameters) {
   }, []);
 
   function changeAudioInput(e: React.ChangeEvent<HTMLSelectElement>) {
-    console.log(e.target.value);
+    if (!deviceManager) return;
+    const selectedDevice = audioInput[Number(e.target.value)];
+    deviceManager.changeAudioDevice(selectedDevice);
   }
 
   function changeVideoInput(e: React.ChangeEvent<HTMLSelectElement>) {
-    console.log(e.target.value);
+    if (!deviceManager) return;
+    const selectedDevice = audioInput[Number(e.target.value)];
+    deviceManager.changeVideoDevice(selectedDevice);
   }
 
-  //TODO Add transition
   return (
     <div
       className={`z-[99999] h-screen w-[30%] absolute ${openParameters ? "right-0" : "right-[-30%]"} top-0 bg-gray-800 flex justify-center transition-all`}
