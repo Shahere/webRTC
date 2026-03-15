@@ -101,9 +101,8 @@ export function InConference({ name, leaveConference }: iInConference) {
       newContact.name,
     );
     setStreams((oldStreams) => {
-      console.log(oldStreams);
       const alreadyExists = oldStreams.some(
-        (s) => s.ownerName === newContact.name,
+        (s) => s.id === newContact.id + s.mediastream.id,
       );
       if (alreadyExists) return oldStreams;
 
