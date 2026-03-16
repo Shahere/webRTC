@@ -16,7 +16,7 @@ export function StreamDrawer({ streams, setStreams }: iStreamsDrawerProps) {
 
     //Look for our localStream
     streams.forEach((stream, index) => {
-      if (stream.ownerId === "") {
+      if (stream.isLocal()) {
         stream.localMuteAudio();
       } else {
         stream.localUnmuteAudio();
@@ -32,7 +32,7 @@ export function StreamDrawer({ streams, setStreams }: iStreamsDrawerProps) {
         if (a.id === streamId) return -1;
         if (b.id === streamId) return 1;
         return 0;
-      })
+      }),
     );
   }
 
