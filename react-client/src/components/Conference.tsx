@@ -84,6 +84,13 @@ export function InConference({ name, leaveConference }: iInConference) {
   function publishScreenShare(newScreen: Stream) {
     if (!conference) return;
     newScreen.addEventListener("ended", () => {
+      newScreen.detachToElement();
+      setStreams((oldStreams) => {
+        const newListStream = oldStreams.filter(
+          (stream) => stream.id != newScreen.id,
+        );
+        return newListStream;
+      });
       conference.unpublish(newScreen);
     });
     conference.publish(newScreen);
