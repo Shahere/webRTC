@@ -84,6 +84,7 @@ export function InConference({ name, leaveConference }: iInConference) {
   function publishScreenShare(newScreen: Stream) {
     if (!conference) return;
     newScreen.addEventListener("ended", () => {
+      console.log("USELESS STREAM NNOW");
       newScreen.detachToElement();
       setStreams((oldStreams) => {
         const newListStream = oldStreams.filter(
@@ -104,6 +105,17 @@ export function InConference({ name, leaveConference }: iInConference) {
     conf.addEventListener("newstream", newstream);
     conf.addEventListener("newPeople", newPeople);
     conf.addEventListener("peopleLeave", peopleLeave);
+    conf.addEventListener("streamEnded", streamEnded);
+  }
+
+  function streamEnded(e: any) {
+    setStreams((oldStreams) => {
+      const newStreamList = oldStreams.filter(
+        (stream) => stream.id !== e.detail.stream.id,
+      );
+
+      return [...newStreamList];
+    });
   }
 
   function newPeople(e: any) {
