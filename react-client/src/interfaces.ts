@@ -53,6 +53,11 @@ export interface iOnClick {
   onClick: Function;
 }
 
+export interface iScreenShareButton {
+  onClick: Function;
+  active: boolean;
+}
+
 export interface iDisplayConference {
   displayConference: DisplayConference;
   setDisplayConference: React.Dispatch<React.SetStateAction<DisplayConference>>;

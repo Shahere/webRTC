@@ -12,6 +12,7 @@ export function Controls({ leaveConference, publishScreenShare }: iControls) {
   const [videoMuted, setVideoMuted] = useState(false);
   const [audioMuted, setAudioMuted] = useState(false);
   const [openParameters, setOpenParameters] = useState(false);
+  const [screenshareActive, setScreenshareActive] = useState(false);
 
   function videoClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     setVideoMuted((prev) => !prev);
@@ -31,6 +32,7 @@ export function Controls({ leaveConference, publishScreenShare }: iControls) {
     try {
       const newScreenShare = await Stream.getScreen();
       publishScreenShare(newScreenShare);
+      setScreenshareActive(true);
     } catch (error) {
       alert(error);
     }
@@ -48,7 +50,10 @@ export function Controls({ leaveConference, publishScreenShare }: iControls) {
             muted={videoMuted}
             onClick={videoClick}
           ></VideoToggleButton>
-          <ShareScreen onClick={shareScreenClick}></ShareScreen>
+          <ShareScreen
+            onClick={shareScreenClick}
+            active={screenshareActive}
+          ></ShareScreen>
           <ParametersButton onClick={parameters}></ParametersButton>
           <HangupButton leaveConference={leaveConference}></HangupButton>
         </div>
