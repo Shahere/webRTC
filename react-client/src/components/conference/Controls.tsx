@@ -8,11 +8,18 @@ import { iControls } from "../../interfaces";
 import { Parameters } from "./Parameters";
 import { Stream } from "mitmi";
 
-export function Controls({ leaveConference, publishScreenShare }: iControls) {
+export function Controls({
+  leaveConference,
+  publishScreenShare,
+  unpublishScreenShare,
+}: iControls) {
   const [videoMuted, setVideoMuted] = useState(false);
   const [audioMuted, setAudioMuted] = useState(false);
   const [openParameters, setOpenParameters] = useState(false);
   const [screenshareActive, setScreenshareActive] = useState(false);
+  const [screenShareStream, setScreenShareStream] = useState<Stream | null>(
+    null,
+  );
 
   function videoClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     setVideoMuted((prev) => !prev);
@@ -29,12 +36,18 @@ export function Controls({ leaveConference, publishScreenShare }: iControls) {
   async function shareScreenClick(
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) {
-    try {
-      const newScreenShare = await Stream.getScreen();
-      publishScreenShare(newScreenShare);
+    if (screenshareActive) {
+      unpublishScreenShare(screenShareStream);
       setScreenshareActive(true);
-    } catch (error) {
-      alert(error);
+    } else {
+      try {
+        const newScreenShare = await Stream.getScreen();
+        publishScreenShare(newScreenShare);
+        setScreenshareActive(true);
+        setScreenShareStream(newScreenShare);
+      } catch (error) {
+        alert(error);
+      }
     }
   }
 

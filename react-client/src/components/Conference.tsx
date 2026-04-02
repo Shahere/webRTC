@@ -101,6 +101,10 @@ export function InConference({ name, leaveConference }: iInConference) {
     });
   }
 
+  function unpublishScreenShare(screenShare: Stream) {
+    conference?.unpublish(screenShare);
+  }
+
   function setListeners(conf: Conference) {
     conf.addEventListener("newstream", newstream);
     conf.addEventListener("newPeople", newPeople);
@@ -178,6 +182,7 @@ export function InConference({ name, leaveConference }: iInConference) {
       <Controls
         leaveConference={leaveConferenceAction}
         publishScreenShare={publishScreenShare}
+        unpublishScreenShare={unpublishScreenShare}
       ></Controls>
       <SelectDisplayConference
         displayConference={displayConference}
