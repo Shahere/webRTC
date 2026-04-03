@@ -38,7 +38,7 @@ export function Controls({
   ) {
     if (screenshareActive) {
       unpublishScreenShare(screenShareStream);
-      setScreenshareActive(true);
+      setScreenshareActive(false);
     } else {
       try {
         const newScreenShare = await Stream.getScreen();
