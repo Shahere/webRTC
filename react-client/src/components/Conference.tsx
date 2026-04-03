@@ -103,6 +103,12 @@ export function InConference({ name, leaveConference }: iInConference) {
 
   function unpublishScreenShare(screenShare: Stream) {
     conference?.unpublish(screenShare);
+    setStreams((oldStreams) => {
+      const newStreamList = oldStreams.filter(
+        (stream) => stream.id != screenShare.id,
+      );
+      return newStreamList;
+    });
   }
 
   function setListeners(conf: Conference) {
