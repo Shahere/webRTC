@@ -13,17 +13,12 @@ export function Controls({
   publishScreenShare,
   unpublishScreenShare,
 }: iControls) {
-  const [videoMuted, setVideoMuted] = useState(false);
   const [audioMuted, setAudioMuted] = useState(false);
   const [openParameters, setOpenParameters] = useState(false);
   const [screenshareActive, setScreenshareActive] = useState(false);
   const [screenShareStream, setScreenShareStream] = useState<Stream | null>(
     null,
   );
-
-  function videoClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    setVideoMuted((prev) => !prev);
-  }
 
   function audioClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     setAudioMuted((prev) => !prev);
@@ -59,10 +54,7 @@ export function Controls({
             muted={audioMuted}
             onClick={audioClick}
           ></MicToggleButton>
-          <VideoToggleButton
-            muted={videoMuted}
-            onClick={videoClick}
-          ></VideoToggleButton>
+          <VideoToggleButton />
           <ShareScreen
             onClick={shareScreenClick}
             active={screenshareActive}
