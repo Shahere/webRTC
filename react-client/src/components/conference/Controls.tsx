@@ -13,16 +13,11 @@ export function Controls({
   publishScreenShare,
   unpublishScreenShare,
 }: iControls) {
-  const [audioMuted, setAudioMuted] = useState(false);
   const [openParameters, setOpenParameters] = useState(false);
   const [screenshareActive, setScreenshareActive] = useState(false);
   const [screenShareStream, setScreenShareStream] = useState<Stream | null>(
     null,
   );
-
-  function audioClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    setAudioMuted((prev) => !prev);
-  }
 
   function parameters(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     setOpenParameters((prev) => !prev);
@@ -50,10 +45,7 @@ export function Controls({
     <div>
       <div className="fixed z-[99] top-0 left-0 w-screen p-[2%]">
         <div className="flex justify-center gap-10">
-          <MicToggleButton
-            muted={audioMuted}
-            onClick={audioClick}
-          ></MicToggleButton>
+          <MicToggleButton />
           <VideoToggleButton />
           <ShareScreen
             onClick={shareScreenClick}
