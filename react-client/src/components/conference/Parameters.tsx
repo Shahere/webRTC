@@ -19,16 +19,16 @@ export function Parameters({ openParameters }: iConferenceParameters) {
     });
   }, []);
 
-  function changeAudioInput(e: React.ChangeEvent<HTMLSelectElement>) {
-    if (!deviceManager) return;
+  async function changeAudioInput(e: React.ChangeEvent<HTMLSelectElement>) {
     const selectedDevice = audioInput[Number(e.target.value)];
-    deviceManager.changeAudioDevice(selectedDevice);
+    if (!deviceManager) return;
+    const newStream = await deviceManager.changeAudioDevice(selectedDevice);
   }
 
-  function changeVideoInput(e: React.ChangeEvent<HTMLSelectElement>) {
+  async function changeVideoInput(e: React.ChangeEvent<HTMLSelectElement>) {
+    const selectedDevice = videoInput[Number(e.target.value)];
     if (!deviceManager) return;
-    const selectedDevice = audioInput[Number(e.target.value)];
-    deviceManager.changeVideoDevice(selectedDevice);
+    const newStream = await deviceManager.changeVideoDevice(selectedDevice);
   }
 
   return (
