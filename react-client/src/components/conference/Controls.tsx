@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import MicToggleButton from "../buttons/mic";
 import VideoToggleButton from "../buttons/video";
 import ParametersButton from "../buttons/cog";
 import HangupButton from "../buttons/hangup";
 import ShareScreen from "../buttons/shareScreen";
-import { iControls } from "../../interfaces";
+import { iConferenceContext, iControls } from "../../interfaces";
 import { Parameters } from "./Parameters";
 import { Stream } from "mitmi";
+import { ConferenceContext } from "../../App";
 
 export function Controls({
   leaveConference,
@@ -18,6 +19,8 @@ export function Controls({
   const [screenShareStream, setScreenShareStream] = useState<Stream | null>(
     null,
   );
+  const { useWindowDimensions }: iConferenceContext =
+    useContext(ConferenceContext);
 
   function parameters(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     setOpenParameters((prev) => !prev);
@@ -43,14 +46,18 @@ export function Controls({
 
   return (
     <div>
-      <div className="fixed z-[99] top-0 left-0 w-screen p-[2%]">
-        <div className="flex justify-center gap-10">
+      <div className="fixed z-[99] top-2 left-0 w-screen p-[2%]">
+        <div
+          className={`flex justify-center ${useWindowDimensions().width > 500 ? "gap-10" : "gap-5"}`}
+        >
           <MicToggleButton />
           <VideoToggleButton />
-          <ShareScreen
-            onClick={shareScreenClick}
-            active={screenshareActive}
-          ></ShareScreen>
+          {useWindowDimensions().width > 500 && (
+            <ShareScreen
+              onClick={shareScreenClick}
+              active={screenshareActive}
+            ></ShareScreen>
+          )}
           <ParametersButton onClick={parameters}></ParametersButton>
           <HangupButton leaveConference={leaveConference}></HangupButton>
         </div>

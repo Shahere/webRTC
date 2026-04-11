@@ -1,11 +1,14 @@
 import { DeviceManager } from "mitmi";
-import { useEffect, useState } from "react";
-import { iConferenceParameters } from "../../interfaces";
+import { useContext, useEffect, useState } from "react";
+import { iConferenceContext, iConferenceParameters } from "../../interfaces";
+import { ConferenceContext } from "../../App";
 
 export function Parameters({ openParameters }: iConferenceParameters) {
   const [audioInput, setAudioInput] = useState<MediaDeviceInfo[]>([]);
   const [videoInput, setVideoInput] = useState<MediaDeviceInfo[]>([]);
   const [deviceManager, setDeviceManager] = useState<DeviceManager>();
+  const { useWindowDimensions }: iConferenceContext =
+    useContext(ConferenceContext);
 
   useEffect(() => {
     const deviceManager = DeviceManager.createInstance();
@@ -33,7 +36,7 @@ export function Parameters({ openParameters }: iConferenceParameters) {
 
   return (
     <div
-      className={`z-[99999] h-screen w-[30%] absolute ${openParameters ? "right-0" : "right-[-30%]"} top-0 bg-gray-800 flex justify-center transition-all`}
+      className={`z-[99999] h-screen ${useWindowDimensions().width > 500 ? "w-[30%]" : "w-[100%]"} absolute ${useWindowDimensions().width > 500 ? (openParameters ? "right-0" : "right-[-30%]") : openParameters ? "right-0" : "right-[-100%]"} top-0 bg-gray-800 flex justify-center transition-all`}
     >
       <div className="mt-[10%] p-[7%]">
         <h1 className="text-4xl font-bold text-heading mb-[7%]">Parameters</h1>

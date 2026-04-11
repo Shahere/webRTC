@@ -19,11 +19,12 @@ export const ConferenceContext = createContext<iConferenceContext>({
   setStream: () => {},
   deviceManager: undefined,
   setDeviceManager: () => {},
+  useWindowDimensions: Function,
 });
 
 function App() {
   const [currentState, setCurrentState] = useState<States>(
-    States.Configuration
+    States.Configuration,
   );
   const [stream, setStream] = useState<Stream>();
   const [deviceManager, setDeviceManager] = useState<DeviceManager>();
@@ -33,6 +34,7 @@ function App() {
     setStream,
     deviceManager,
     setDeviceManager,
+    useWindowDimensions,
   };
 
   useEffect(() => {
@@ -45,6 +47,31 @@ function App() {
 
   function leaveConference() {
     setCurrentState(States.End);
+  }
+
+  function getWindowDimensions() {
+    const { innerWidth: width, innerHeight: height } = window;
+    return {
+      width,
+      height,
+    };
+  }
+
+  function useWindowDimensions() {
+    const [windowDimensions, setWindowDimensions] = useState(
+      getWindowDimensions(),
+    );
+
+    useEffect(() => {
+      function handleResize() {
+        setWindowDimensions(getWindowDimensions());
+      }
+
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    return windowDimensions;
   }
 
   function showStates(): JSX.Element {

@@ -19,6 +19,7 @@ export interface iConferenceContext {
   setDeviceManager: React.Dispatch<
     React.SetStateAction<DeviceManager | undefined>
   >;
+  useWindowDimensions: Function;
 }
 
 export interface iStreamsDrawerProps {
