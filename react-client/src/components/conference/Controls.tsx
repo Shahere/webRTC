@@ -63,7 +63,10 @@ export function Controls({
         </div>
       </div>
       <div className="relative w-screen">
-        <Parameters openParameters={openParameters}></Parameters>
+        <Parameters
+          openParameters={openParameters}
+          setOpenParameters={setOpenParameters}
+        ></Parameters>
       </div>
     </div>
   );

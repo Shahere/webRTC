@@ -49,6 +49,7 @@ export interface iLeaveConference {
 
 export interface iConferenceParameters {
   openParameters: boolean;
+  setOpenParameters: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface iOnClick {
