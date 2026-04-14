@@ -29,14 +29,14 @@ export function Parameters({
   async function changeAudioInput(e: React.ChangeEvent<HTMLSelectElement>) {
     const selectedDevice = audioInput[Number(e.target.value)];
     if (!deviceManager) return;
-    const newStream = await deviceManager.changeAudioDevice(selectedDevice);
+    await deviceManager.changeAudioDevice(selectedDevice);
     setOpenParameters(false);
   }
 
   async function changeVideoInput(e: React.ChangeEvent<HTMLSelectElement>) {
     const selectedDevice = videoInput[Number(e.target.value)];
     if (!deviceManager) return;
-    const newStream = await deviceManager.changeVideoDevice(selectedDevice);
+    await deviceManager.changeVideoDevice(selectedDevice);
     setOpenParameters(false);
   }
 

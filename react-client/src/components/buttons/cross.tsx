@@ -1,15 +1,9 @@
 import { X } from "lucide-react";
-import { ConferenceContext } from "../../App";
-import { useContext } from "react";
-import { iConferenceContext } from "../../interfaces";
-
 export interface ParametersButtonParams {
   onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 export default function CrossButton({ onClick }: ParametersButtonParams) {
-  const { stream }: iConferenceContext = useContext(ConferenceContext);
-
   function onclick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     onClick(e);
   }
