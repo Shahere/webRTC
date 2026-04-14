@@ -8,7 +8,7 @@ export function SelectDisplayConference({
   setDisplayConference,
 }: iDisplayConference) {
   return (
-    <div className="fixed z-[99] bottom-[3%] right-[1%]">
+    <div className="fixed z-[99] bottom-[3%] left-[2%]">
       <div className="flex items-center gap-2 rounded-2xl bg-muted p-1 shadow-sm">
         <ToggleButton
           active={displayConference === DisplayConference.Panel}
