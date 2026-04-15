@@ -11,7 +11,7 @@ export function Parameters({
   const [audioInput, setAudioInput] = useState<MediaDeviceInfo[]>([]);
   const [videoInput, setVideoInput] = useState<MediaDeviceInfo[]>([]);
   const [deviceManager, setDeviceManager] = useState<DeviceManager>();
-  const { useWindowDimensions }: iConferenceContext =
+  const { useWindowDimensions, setStream }: iConferenceContext =
     useContext(ConferenceContext);
 
   useEffect(() => {
@@ -29,14 +29,16 @@ export function Parameters({
   async function changeAudioInput(e: React.ChangeEvent<HTMLSelectElement>) {
     const selectedDevice = audioInput[Number(e.target.value)];
     if (!deviceManager) return;
-    await deviceManager.changeAudioDevice(selectedDevice);
+    const newStream = await deviceManager.changeAudioDevice(selectedDevice);
+    setStream(newStream);
     setOpenParameters(false);
   }
 
   async function changeVideoInput(e: React.ChangeEvent<HTMLSelectElement>) {
     const selectedDevice = videoInput[Number(e.target.value)];
     if (!deviceManager) return;
-    await deviceManager.changeVideoDevice(selectedDevice);
+    const newStream = await deviceManager.changeVideoDevice(selectedDevice);
+    setStream(newStream);
     setOpenParameters(false);
   }
 

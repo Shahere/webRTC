@@ -75,6 +75,18 @@ export function InConference({ name, leaveConference }: iInConference) {
     };
   }, [conference]);
 
+  useEffect(() => {
+    if (!stream) return;
+    // Stream can change in parameters when using another camera :// idk if its ok
+    setStreams((oldStreams) => {
+      const withoutStreamList = oldStreams.filter(
+        (stream) => stream.ownerId !== "camera",
+      );
+      const newListStream = [stream, ...withoutStreamList];
+      return newListStream;
+    });
+  }, [stream]);
+
   function leaveConferenceAction() {
     if (!conference) return;
     conference.leave();
