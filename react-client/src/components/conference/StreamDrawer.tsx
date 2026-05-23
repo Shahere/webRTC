@@ -1,10 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { iStreamsDrawerProps } from "../../interfaces";
 import { MiniVideo } from "./MiniVideo";
 
 export function StreamDrawer({ streams, setStreams }: iStreamsDrawerProps) {
   const mainVideoRef = useRef<HTMLVideoElement>(null);
   const mainVideoNameRef = useRef<HTMLParagraphElement>(null);
+  const [isShow, setIsShow] = useState(true);
 
   useEffect(() => {
     if (streams.length > 0 && mainVideoRef.current) {
@@ -46,6 +47,11 @@ export function StreamDrawer({ streams, setStreams }: iStreamsDrawerProps) {
     }
   }
 
+  function changeDrawerVisibility() {
+    console.log("CHANGE DRAWER");
+    setIsShow((old) => !old);
+  }
+
   return (
     <div className="relative w-screen h-screen bg-black">
       <video
@@ -61,16 +67,28 @@ export function StreamDrawer({ streams, setStreams }: iStreamsDrawerProps) {
           Name
         </p>
       </div>
-      {/* remplacer par w-fit et centrer apres l'element*/}
       {streams.length > 1 && (
-        <div className="absolute bottom-0 left-0 w-full h-[25%] bg-black/60 backdrop-blur-sm p-2 flex gap-2 overflow-x-auto">
-          {streams.slice(1).map((stream, index) => (
-            <MiniVideo
-              stream={stream}
-              key={index}
-              changeMainStream={changeMainStream}
-            ></MiniVideo>
-          ))}
+        <div
+          className={`absolute left-0 w-full h-[25%] ${isShow ? "bottom-0" : "-bottom-[25%]"} transition-all`}
+        >
+          <div className="absolute -top-8 left-1/2 -translate-x-10 ">
+            <div
+              className="relative backdrop-blur rounded-t-full bg-black/60 w-28 h-8 hover:bg-white/20"
+              onClick={() => changeDrawerVisibility()}
+            >
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full bg-white/50" />
+            </div>
+          </div>
+
+          <div className="w-full h-full backdrop-blur-sm p-2 flex gap-2 overflow-x-auto bg-black/60">
+            {streams.slice(1).map((stream, index) => (
+              <MiniVideo
+                stream={stream}
+                key={index}
+                changeMainStream={changeMainStream}
+              ></MiniVideo>
+            ))}
+          </div>
         </div>
       )}
     </div>
