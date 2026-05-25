@@ -11,7 +11,7 @@ export function StreamPanel({ streams, setStreams }: iStreamsDrawerProps) {
   useEffect(() => {
     //Look for our localStream
     streams.forEach((stream, index) => {
-      if (stream.ownerId === "") {
+      if (stream.isLocal()) {
         stream.localMuteAudio();
       } else {
         stream.localUnmuteAudio();
