@@ -24,8 +24,11 @@ func main() {
 	fmt.Printf("Start server...\n")
 	http.HandleFunc("/", getRoot)
 	http.HandleFunc("/hello", getHello)
-	port := 3333
 
+	hub := newHub()
+	go hub.run()
+
+	port := 3333
 	err := http.ListenAndServe(":"+strconv.Itoa(port), nil)
 
 	if errors.Is(err, http.ErrServerClosed) {
