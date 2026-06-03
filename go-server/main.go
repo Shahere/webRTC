@@ -22,11 +22,15 @@ func getHello(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	fmt.Printf("Start server...\n")
-	http.HandleFunc("/", getRoot)
-	http.HandleFunc("/hello", getHello)
 
 	hub := newHub()
 	go hub.run()
+
+	http.HandleFunc("/", getRoot)
+	http.HandleFunc("/hello", getHello)
+	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		serveWs(hub, w, r)
+	})
 
 	port := 3333
 	err := http.ListenAndServe(":"+strconv.Itoa(port), nil)
