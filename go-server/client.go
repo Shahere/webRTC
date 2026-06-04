@@ -44,8 +44,13 @@ func (client *Client) read(conn *websocket.Conn) {
 		}
 		fmt.Printf("Message Receive : %s\n", message)
 
-		//TODO Send back message to client by broadcast
-		client.hub.broadcast <- message
+		newMessage := DecodeMessage(message)
+		if newMessage.Target == "all" {
+			client.hub.broadcast <- message
+			continue
+		}
+
+		fmt.Println(*newMessage)
 	}
 }
 
