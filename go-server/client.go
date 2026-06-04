@@ -44,8 +44,8 @@ func (client *Client) read(conn *websocket.Conn) {
 		}
 		fmt.Printf("Message Receive : %s\n", message)
 
-		//TODO Send back message to client
-		client.toSend <- message
+		//TODO Send back message to client by broadcast
+		client.hub.broadcast <- message
 	}
 }
 
