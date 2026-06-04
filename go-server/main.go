@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -26,7 +27,19 @@ func main() {
 	hub := newHub()
 	go hub.run()
 
-	http.HandleFunc("/", getRoot)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Printf("%s\n", r.Host)
+		fmt.Printf("got / request\n")
+		clients := hub.getClients()
+		ipAddrClient := make([]string, len(clients))
+
+		for i := 0; i < len(clients); i++ {
+			ipAddrClient[i] = clients[i].conn.RemoteAddr().String()
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(ipAddrClient)
+	})
 	http.HandleFunc("/hello", getHello)
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		serveWs(hub, w, r)

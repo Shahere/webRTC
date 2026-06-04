@@ -1,5 +1,9 @@
 package main
 
+import (
+	"golang.org/x/exp/maps"
+)
+
 type Hub struct {
 	clients    map[*Client]bool
 	register   chan *Client
@@ -14,6 +18,11 @@ func newHub() *Hub {
 	}
 }
 
+func (hub *Hub) getClients() []*Client {
+	keys := maps.Keys(hub.clients)
+	return keys
+}
+
 func (hub *Hub) run() {
 	for {
 		select {
@@ -21,8 +30,6 @@ func (hub *Hub) run() {
 			hub.clients[client] = true
 		case client := <-hub.unregister:
 			delete(hub.clients, client)
-		default:
-			return
 		}
 	}
 }
