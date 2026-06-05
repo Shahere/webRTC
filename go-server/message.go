@@ -5,8 +5,22 @@ import (
 	"fmt"
 )
 
+type ActionType string
+
+const (
+	Close ActionType = "close"
+	Other ActionType = "other"
+	Test  ActionType = "test"
+)
+
 type Message struct {
-	Target string `json:"target"`
+	Target  string      `json:"target"`
+	From    string      `json:"from"`
+	Payload PayloadType `json:"payload"`
+}
+
+type PayloadType struct {
+	Action ActionType `json:"action"`
 }
 
 func DecodeMessage(data []byte) *Message {

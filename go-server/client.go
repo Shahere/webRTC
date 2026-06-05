@@ -45,7 +45,7 @@ func (client *Client) read(conn *websocket.Conn) {
 		fmt.Printf("Message Receive : %s\n", message)
 
 		newMessage := DecodeMessage(message)
-		if newMessage.Target == "all" {
+		if newMessage.Target == "" {
 			client.hub.broadcast <- message
 			continue
 		}
