@@ -9,8 +9,8 @@ type ActionType string
 
 const (
 	Close ActionType = "close"
-	Other ActionType = "other"
-	Test  ActionType = "test"
+	Join  ActionType = "join"
+	GetId ActionType = "getid"
 )
 
 type Message struct {
@@ -20,7 +20,11 @@ type Message struct {
 }
 
 type PayloadType struct {
-	Action ActionType `json:"action"`
+	Action     ActionType `json:"action"`
+	Message    string     `json:"message"`
+	Disconnect int        `json:"disconnect"`
+	Sdp        string     `json:"sdp"`
+	Candidate  string     `json:"candidate"`
 }
 
 func DecodeMessage(data []byte) *Message {
@@ -31,4 +35,12 @@ func DecodeMessage(data []byte) *Message {
 		fmt.Println(err)
 	}
 	return &message
+}
+
+func (message *Message) encodeMessage() []byte {
+	s, err := json.Marshal(message)
+	if err != nil {
+		fmt.Printf("Error while encoding message")
+	}
+	return s
 }

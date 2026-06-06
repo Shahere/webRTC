@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
@@ -13,10 +14,9 @@ var upgrader = websocket.Upgrader{
 }
 
 type Client struct {
-	hub *Hub
-
-	conn *websocket.Conn
-
+	id     string
+	hub    *Hub
+	conn   *websocket.Conn
 	toSend chan []byte
 }
 
@@ -45,10 +45,24 @@ func (client *Client) read(conn *websocket.Conn) {
 		fmt.Printf("Message Receive : %s\n", message)
 
 		newMessage := DecodeMessage(message)
+		if newMessage.Payload.Action == "join" { //TODO ActionType ???
+			//TODO Send id and not continue !!
+		}
+		if newMessage.From == "" {
+			continue
+		}
 		if newMessage.Target == "" {
 			client.hub.broadcast <- message
 			continue
 		}
+		clients := client.hub.getClients()
+		var clientToSend *Client
+		for _, element := range clients {
+			if element.id == newMessage.Target {
+				clientToSend = element
+			}
+		}
+		clientToSend.toSend <- message
 
 		fmt.Println(*newMessage)
 	}
@@ -63,6 +77,7 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Printf("New client : %s\n", conn.RemoteAddr())
 	client := &Client{
+		id:     uuid.Must(uuid.NewRandom()).String(),
 		hub:    hub,
 		conn:   conn,
 		toSend: make(chan []byte),
