@@ -21,6 +21,11 @@ type Client struct {
 }
 
 func (client *Client) write(conn *websocket.Conn) {
+	defer func() {
+		client.hub.unregister <- client
+		client.conn.Close()
+	}()
+
 	for {
 		select {
 		case message := <-client.toSend:
@@ -32,10 +37,13 @@ func (client *Client) write(conn *websocket.Conn) {
 			}
 		}
 	}
-	//TODO defer ?
 }
 
 func (client *Client) read(conn *websocket.Conn) {
+	defer func() {
+		client.hub.unregister <- client
+		client.conn.Close()
+	}()
 	for {
 		_, message, err := conn.ReadMessage()
 		if err != nil {
@@ -45,9 +53,7 @@ func (client *Client) read(conn *websocket.Conn) {
 		fmt.Printf("Message Receive : %s\n", message)
 
 		newMessage := DecodeMessage(message)
-		if newMessage.Payload.Action == "join" { //TODO ActionType ???
-			//TODO Send id and not continue !!
-		}
+
 		if newMessage.From == "" {
 			continue
 		}
