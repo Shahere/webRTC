@@ -15,16 +15,26 @@ const (
 
 type Message struct {
 	Target  string      `json:"target"`
-	From    string      `json:"from"`
+	From    ContactInfo `json:"from"`
 	Payload PayloadType `json:"payload"`
 }
 
+type ContactInfo struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type RTCSessionDescriptionInit struct {
+	Type string `json:"name"`
+	Sdp  string `json:"sdp"`
+}
+
 type PayloadType struct {
-	Action     ActionType `json:"action"`
-	Message    string     `json:"message"`
-	Disconnect int        `json:"disconnect"`
-	Sdp        string     `json:"sdp"`
-	Candidate  string     `json:"candidate"`
+	Action     ActionType                `json:"action"`
+	Message    string                    `json:"message"`
+	Disconnect int                       `json:"disconnect"`
+	Sdp        RTCSessionDescriptionInit `json:"sdp"`
+	Candidate  string                    `json:"candidate"`
 }
 
 func DecodeMessage(data []byte) *Message {

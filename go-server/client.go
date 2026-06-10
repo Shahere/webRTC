@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
@@ -15,6 +14,7 @@ var upgrader = websocket.Upgrader{
 
 type Client struct {
 	id     string
+	name   string
 	hub    *Hub
 	conn   *websocket.Conn
 	toSend chan []byte
@@ -54,16 +54,19 @@ func (client *Client) read(conn *websocket.Conn) {
 
 		newMessage := DecodeMessage(message)
 
-		if newMessage.From == "" {
-			continue
+		if !client.verifyIdentity(*newMessage) {
+			fmt.Printf("Identity is not correct !")
+			break
 		}
+
 		if newMessage.Target == "" {
-			client.hub.broadcast <- message
+			client.hub.broadcast <- BroadcastType{message, client}
 			continue
 		}
 		clients := client.hub.getClients()
 		var clientToSend *Client
 		for _, element := range clients {
+			fmt.Println(element.id, newMessage.Target)
 			if element.id == newMessage.Target {
 				clientToSend = element
 			}
@@ -72,6 +75,27 @@ func (client *Client) read(conn *websocket.Conn) {
 
 		fmt.Println(*newMessage)
 	}
+}
+
+func (client *Client) verifyIdentity(newMessage Message) bool {
+	if newMessage.From.Name == "" {
+		return false
+	}
+	if newMessage.Payload.Action == "join" {
+		if client.name != "" {
+			return false
+		}
+		client.name = newMessage.From.Name
+
+		if client.id != "" {
+			return false
+		}
+		client.id = newMessage.From.Id
+	}
+	if client.name != newMessage.From.Name {
+		return false
+	}
+	return true
 }
 
 func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
@@ -83,7 +107,6 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Printf("New client : %s\n", conn.RemoteAddr())
 	client := &Client{
-		id:     uuid.Must(uuid.NewRandom()).String(),
 		hub:    hub,
 		conn:   conn,
 		toSend: make(chan []byte),

@@ -6,11 +6,16 @@ import (
 	"golang.org/x/exp/maps"
 )
 
+type BroadcastType struct {
+	message []byte
+	client  *Client
+}
+
 type Hub struct {
 	clients    map[*Client]bool
 	register   chan *Client
 	unregister chan *Client
-	broadcast  chan []byte
+	broadcast  chan BroadcastType
 }
 
 func newHub() *Hub {
@@ -18,7 +23,7 @@ func newHub() *Hub {
 		clients:    make(map[*Client]bool),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
-		broadcast:  make(chan []byte),
+		broadcast:  make(chan BroadcastType),
 	}
 }
 
@@ -34,10 +39,13 @@ func (hub *Hub) run() {
 			hub.clients[client] = true
 		case client := <-hub.unregister:
 			delete(hub.clients, client)
-		case message := <-hub.broadcast:
-			fmt.Printf("Broadcast message : %s\n", message)
+		case broadcastType := <-hub.broadcast:
+			fmt.Printf("Broadcast message : %s\n", broadcastType.message)
 			for k := range hub.clients {
-				k.toSend <- message
+				if k == broadcastType.client {
+					continue
+				}
+				k.toSend <- broadcastType.message
 			}
 		}
 	}
