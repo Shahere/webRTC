@@ -53,7 +53,10 @@ func (client *Client) read(conn *websocket.Conn) {
 		}
 		//fmt.Printf("Message Receive : %s\n", message)
 
-		newMessage := DecodeMessage(message)
+		newMessage, err := DecodeMessage(message)
+		if err != nil {
+			break
+		}
 
 		if !client.verifyIdentity(*newMessage) {
 			fmt.Printf("Identity is not correct !")
