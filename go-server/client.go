@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"slices"
 
 	"github.com/gorilla/websocket"
 )
@@ -29,7 +30,7 @@ func (client *Client) write(conn *websocket.Conn) {
 	for {
 		select {
 		case message := <-client.toSend:
-			fmt.Printf("Sending message %s\n", message)
+			//fmt.Printf("Sending message %s\n", message)
 			err := conn.WriteMessage(websocket.TextMessage, message)
 			if err != nil {
 				fmt.Printf("Error while writing message : %s", message)
@@ -50,7 +51,7 @@ func (client *Client) read(conn *websocket.Conn) {
 			fmt.Printf("Error while reading message\n")
 			break
 		}
-		fmt.Printf("Message Receive : %s\n", message)
+		//fmt.Printf("Message Receive : %s\n", message)
 
 		newMessage := DecodeMessage(message)
 
@@ -64,16 +65,15 @@ func (client *Client) read(conn *websocket.Conn) {
 			continue
 		}
 		clients := client.hub.getClients()
-		var clientToSend *Client
-		for _, element := range clients {
-			fmt.Println(element.id, newMessage.Target)
-			if element.id == newMessage.Target {
-				clientToSend = element
-			}
+		iClientToSend := slices.IndexFunc(clients, func(client *Client) bool {
+			return client.id == newMessage.Target
+		})
+		if iClientToSend == -1 {
+			continue
 		}
+		clientToSend := clients[iClientToSend]
 		clientToSend.toSend <- message
 
-		fmt.Println(*newMessage)
 	}
 }
 

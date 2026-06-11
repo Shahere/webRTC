@@ -32,9 +32,9 @@ type RTCSessionDescriptionInit struct {
 type PayloadType struct {
 	Action     ActionType                `json:"action"`
 	Message    string                    `json:"message"`
-	Disconnect int                       `json:"disconnect"`
+	Disconnect string                    `json:"disconnect"`
 	Sdp        RTCSessionDescriptionInit `json:"sdp"`
-	Candidate  string                    `json:"candidate"`
+	Candidate  any                       `json:"candidate"`
 }
 
 func DecodeMessage(data []byte) *Message {

@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"golang.org/x/exp/maps"
 )
 
@@ -40,7 +38,7 @@ func (hub *Hub) run() {
 		case client := <-hub.unregister:
 			delete(hub.clients, client)
 		case broadcastType := <-hub.broadcast:
-			fmt.Printf("Broadcast message : %s\n", broadcastType.message)
+			//fmt.Printf("Broadcast message : %s\n", broadcastType.message)
 			for k := range hub.clients {
 				if k == broadcastType.client {
 					continue
