@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"slices"
 
 	"github.com/gorilla/websocket"
 )
@@ -67,14 +66,10 @@ func (client *Client) read(conn *websocket.Conn) {
 			client.hub.broadcast <- BroadcastType{message, client}
 			continue
 		}
-		clients := client.hub.getClients()
-		iClientToSend := slices.IndexFunc(clients, func(client *Client) bool {
-			return client.id == newMessage.Target
-		})
-		if iClientToSend == -1 {
-			continue
+		clientToSend, err := client.hub.getClientsById(newMessage.Target)
+		if err != nil {
+			fmt.Printf("No client to send %s", newMessage.Target)
 		}
-		clientToSend := clients[iClientToSend]
 		clientToSend.toSend <- message
 
 	}

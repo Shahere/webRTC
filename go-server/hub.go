@@ -1,6 +1,9 @@
 package main
 
 import (
+	"errors"
+	"slices"
+
 	"golang.org/x/exp/maps"
 )
 
@@ -47,4 +50,19 @@ func (hub *Hub) run() {
 			}
 		}
 	}
+}
+
+func (hub *Hub) getClientsById(id string) (*Client, error) {
+	if id == "" {
+		return nil, errors.New("Empty ID")
+	}
+	clients := hub.getClients()
+	iClientToSend := slices.IndexFunc(clients, func(client *Client) bool {
+		return client.id == id
+	})
+	if iClientToSend == -1 {
+		return nil, errors.New("No client found")
+	}
+
+	return clients[iClientToSend], nil
 }
