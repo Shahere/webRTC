@@ -20,7 +20,7 @@ export enum DisplayConference {
  * @param props name
  * @returns
  */
-export function InConference({ name, leaveConference }: iInConference) {
+export function InConference({ name, hub, leaveConference }: iInConference) {
   const { stream, setStream }: iConferenceContext =
     useContext(ConferenceContext);
 
@@ -39,7 +39,7 @@ export function InConference({ name, leaveConference }: iInConference) {
       try {
         const createdSession = await Session.create(name);
         setSession(createdSession);
-        const conf = new Conference("test", createdSession);
+        const conf = new Conference(hub, createdSession);
         setConference(conf);
         conferenceRef.current = conf;
         setLoading(false);

@@ -4,11 +4,14 @@ import { DisplayConference } from "./components/Conference";
 export interface iPreviewScreen {
   name: string;
   setName: React.Dispatch<React.SetStateAction<string>>;
+  hub: string;
+  setHub: React.Dispatch<React.SetStateAction<string>>;
   joinConference: Function;
 }
 
 export interface iInConference {
   name: string;
+  hub: string;
   leaveConference: Function;
 }
 

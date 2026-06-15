@@ -29,6 +29,8 @@ function App() {
   const [stream, setStream] = useState<Stream>();
   const [deviceManager, setDeviceManager] = useState<DeviceManager>();
   const [name, setName] = useState<string>("");
+  const [hub, setHub] = useState<string>("default_hub");
+
   const value: iConferenceContext = {
     stream,
     setStream,
@@ -81,6 +83,8 @@ function App() {
           <PreviewScreen
             name={name}
             setName={setName}
+            hub={hub}
+            setHub={setHub}
             joinConference={joinConference}
           ></PreviewScreen>
         );
@@ -88,6 +92,7 @@ function App() {
         return (
           <InConference
             name={name}
+            hub={hub}
             leaveConference={leaveConference}
           ></InConference>
         );
