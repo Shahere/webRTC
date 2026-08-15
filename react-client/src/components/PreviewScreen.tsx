@@ -19,6 +19,7 @@ export function PreviewScreen({
   const localStreamRef = useRef<HTMLVideoElement>(null);
   const errorNoStreamRef = useRef<HTMLDivElement>(null);
   const errorNoNameRef = useRef<HTMLDivElement>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLTextAreaElement>(null);
 
   const [audioInput, setAudioInput] = useState<MediaDeviceInfo[]>([]);
@@ -58,6 +59,7 @@ export function PreviewScreen({
     let localStreamPre = await Stream.getCamera(true, true);
     setStream(localStreamPre);
     errorNoStreamRef.current!.style.display = "none";
+    errorRef.current!.style.display = "none";
 
     if (localStreamRef.current) {
       localStreamPre.attachToElement(localStreamRef.current);
@@ -73,10 +75,12 @@ export function PreviewScreen({
   function joinConferenceAction() {
     if (!stream) {
       errorNoStreamRef.current!.style.display = "block";
+      errorRef.current!.style.display = "block";
       return;
     }
     if (!name) {
       errorNoNameRef.current!.style.display = "block";
+      errorRef.current!.style.display = "block";
       return;
     }
     setStream((prev) => {
@@ -90,6 +94,7 @@ export function PreviewScreen({
 
   function changeName(changeVal: string) {
     errorNoNameRef.current!.style.display = "none";
+    errorRef.current!.style.display = "none";
     setName(changeVal);
   }
 
@@ -113,19 +118,22 @@ export function PreviewScreen({
 
   return (
     <div className="text-white bg-stone-900 w-full min-h-screen pt-10 pb-10 flex items-center flex-col">
-      <h2 className="mb-4 text-4xl font-extrabold leading-none tracking-tight md:text-5xl lg:text-6xl text-white">
+      <h3 className="mb-4 text-4xl font-extrabold leading-none tracking-tight md:text-5xl lg:text-6xl text-white">
         Preview
-      </h2>
+      </h3>
 
       <div className="mt-5">
         <div className="flex justify-center">
           <video
-            className={`${stream == null ? "size-0" : ""}`}
+            className={`${stream == null ? "size-full" : ""} bg-red-500`}
             autoPlay
             ref={localStreamRef}
           ></video>
         </div>
-        <div className="flex flex-col justify-center items-center p-5">
+        <div
+          ref={errorRef}
+          className="flex flex-col justify-center items-center p-5"
+        >
           <div ref={errorNoStreamRef} className="hidden text-red-800">
             Vous devez avoir une camera pour rejoindre
           </div>
