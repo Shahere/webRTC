@@ -117,98 +117,41 @@ export function PreviewScreen({
   }
 
   return (
-    <div className="text-white bg-stone-900 w-full min-h-screen pt-10 pb-10 flex items-center flex-col">
-      <h3 className="mb-4 text-4xl font-extrabold leading-none tracking-tight md:text-5xl lg:text-6xl text-white">
-        Preview
-      </h3>
+    <div className="text-white bg-stone-900 w-full h-screen pt-10 flex items-center flex-col">
+      <div className="w-full flex justify-center">
+        <h3 className="mb-4 text-4xl font-extrabold leading-none tracking-tight md:text-5xl lg:text-6xl text-white">
+          Mitmi
+        </h3>
+      </div>
 
-      <div className="mt-5">
-        <div className="flex justify-center">
-          <video
-            className={`${stream == null ? "size-full" : ""} bg-red-500`}
-            autoPlay
-            ref={localStreamRef}
-          ></video>
-        </div>
-        <div
-          ref={errorRef}
-          className="flex flex-col justify-center items-center p-5"
-        >
-          <div ref={errorNoStreamRef} className="hidden text-red-800">
-            Vous devez avoir une camera pour rejoindre
+      <div className="w-full h-full flex">
+        <div className="bg-red-500 w-[100%]"></div>
+        <div className="w-[70%]">
+          <div className="flex flex-col h-full justify-center text-center">
+            <h4 className="font-bold text-2xl">
+              Parler en toute confidentialité
+            </h4>
+            <p className="p-5">
+              Les communications sont chiffrés de bout en bout. Aucune cookies
+              sauvegardés sur votre navigateur.
+            </p>
+            <div className="x-fit">
+              <div className="relative h-11 w-[50%] min-w-[200px] left-[50%] translate-x-[-50%] mt-10">
+                <input
+                  className="peer h-full w-full border-b border-blue-gray-200 bg-transparent pt-4 pb-1.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
+                  placeholder=" "
+                />
+                <label className="after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-500 transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-blue-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-blue-gray-500 peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-blue-500 peer-focus:after:scale-x-100 peer-focus:after:border-blue-500 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
+                  Your name
+                </label>
+              </div>
+              <button className="rounded-3xl mt-5 relative inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-heading rounded-base group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800">
+                <span className="relative px-4 py-2.5 transition-all ease-in duration-75 bg-neutral-primary-soft rounded-base group-hover:bg-transparent group-hover:dark:bg-transparent leading-5">
+                  Join conference
+                </span>
+              </button>
+            </div>
           </div>
-          <div ref={errorNoNameRef} className="hidden text-red-800">
-            Vous devez avoir un nom pour rejoindre
-          </div>
-        </div>
-        <div className="flex justify-center space-between mt-[5%]">
-          <button
-            id="startstream"
-            onClick={startLocalStream}
-            className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-          >
-            Start stream
-          </button>
-          <button
-            id="stopstream"
-            onClick={stopLocalStream}
-            className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-          >
-            Stop stream
-          </button>
-        </div>
-        <div className="flex justify-center mt-[5%] px-[10%]">
-          {audioInput.length > 0 && (
-            <select
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              onChange={changeAudioInput}
-            >
-              {audioInput.map((mediaDeviceInfo, key) => (
-                <option key={mediaDeviceInfo.deviceId} value={key}>
-                  {mediaDeviceInfo.label}
-                </option>
-              ))}
-            </select>
-          )}
-          {videoInput.length > 0 && (
-            <select
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              onChange={changeVideoInput}
-            >
-              {videoInput.map((mediaDeviceInfo, key) => (
-                <option key={mediaDeviceInfo.deviceId} value={key}>
-                  {mediaDeviceInfo.label}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
-        <div className="flex col justify-center p-5 px-[10%] gap-[5%]">
-          <textarea
-            ref={nameRef}
-            className="resize-none block p-2.5 w-full h-10 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="Your name"
-            onChange={(e) => {
-              changeName(e.target.value);
-            }}
-          ></textarea>
-          <textarea
-            ref={nameRef}
-            className="resize-none block p-2.5 w-full h-10 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="Hub name"
-            onChange={(e) => {
-              changeHub(e.target.value);
-            }}
-          ></textarea>
-        </div>
-        <div className="flex justify-center">
-          <button
-            id="stopstream"
-            onClick={joinConferenceAction}
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-          >
-            Join conférence
-          </button>
         </div>
       </div>
     </div>
