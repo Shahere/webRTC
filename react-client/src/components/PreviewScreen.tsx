@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { ConferenceContext } from "../App";
 import { iPreviewScreen } from "../interfaces";
 import { iConferenceContext } from "../interfaces";
+import { MicOff, VideoOff, Mic, Video, ChevronDown } from "lucide-react";
 
 /**
  *
@@ -125,13 +126,155 @@ export function PreviewScreen({
       </div>
 
       <div className="w-full h-full flex">
-        <div className="bg-red-500 w-[100%]"></div>
-        <div className="w-[70%]">
+        <div className="w-[55%] flex items-center justify-center">
+          <div className="flex items-center justify-center p-8 w-[100%]">
+            <div className="w-[75%]">
+              {/* Zone vidéo */}
+              <div className="relative h-[370px] rounded-[32px] bg-gradient-to-b from-[#5a3e30] to-[#35241c] overflow-hidden">
+                {/* Avatar */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-20 h-20 rounded-full bg-[#ffb15b]" />
+                </div>
+
+                {/* Contrôles */}
+                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
+                  {/* Micro */}
+                  <div className="relative">
+                    <button
+                      className="
+                  w-[54px] h-[54px]
+                  rounded-full
+                  border border-[#77706c]
+                  bg-[#44372f]/70
+                  flex items-center justify-center
+                  text-white
+                  hover:bg-[#51433a]
+                  transition
+                "
+                    >
+                      <MicOff size={21} strokeWidth={1.8} />
+                    </button>
+
+                    <span
+                      className="
+                  absolute -right-1 -top-1
+                  w-6 h-6
+                  rounded-full
+                  bg-[#ff4549]
+                  text-white
+                  text-[11px]
+                  flex items-center justify-center
+                "
+                    >
+                      !
+                    </span>
+                  </div>
+
+                  {/* Caméra */}
+                  <div className="relative">
+                    <button
+                      className="
+                  w-[54px] h-[54px]
+                  rounded-full
+                  border border-[#77706c]
+                  bg-[#44372f]/70
+                  flex items-center justify-center
+                  text-white
+                  hover:bg-[#51433a]
+                  transition
+                "
+                    >
+                      <VideoOff size={21} strokeWidth={1.8} />
+                    </button>
+
+                    <span
+                      className="
+                  absolute -right-1 -top-1
+                  w-6 h-6
+                  rounded-full
+                  bg-[#ff4549]
+                  text-white
+                  text-[11px]
+                  flex items-center justify-center
+                "
+                    >
+                      !
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Permissions */}
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                {/* Audio */}
+                <button
+                  className="
+              h-[83px]
+              rounded-[42px]
+              border border-[#3c3c4d]
+              px-7
+              flex items-center
+              text-left
+              hover:bg-[#1b1b25]
+              transition
+            "
+                >
+                  <Mic
+                    size={21}
+                    className="text-[#c5c5d0] mr-5"
+                    strokeWidth={1.8}
+                  />
+
+                  <div className="flex-1">
+                    <div className="text-[13px] text-[#a9c7f7]">Audio</div>
+
+                    <div className="text-[14px] text-[#77778b] mt-0.5">
+                      Autorisations non accordées.
+                    </div>
+                  </div>
+
+                  <ChevronDown size={17} className="text-[#c2c2cc]" />
+                </button>
+
+                {/* Vidéo */}
+                <button
+                  className="
+              h-[83px]
+              rounded-[42px]
+              border border-[#3c3c4d]
+              px-7
+              flex items-center
+              text-left
+              hover:bg-[#1b1b25]
+              transition
+            "
+                >
+                  <Video
+                    size={21}
+                    className="text-[#c5c5d0] mr-5"
+                    strokeWidth={1.8}
+                  />
+
+                  <div className="flex-1">
+                    <div className="text-[13px] text-[#a9c7f7]">Vidéo</div>
+
+                    <div className="text-[14px] text-[#77778b] mt-0.5">
+                      Autorisations non accordées.
+                    </div>
+                  </div>
+
+                  <ChevronDown size={17} className="text-[#c2c2cc]" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="w-[45%]">
           <div className="flex flex-col h-full justify-center text-center">
-            <h4 className="font-bold text-2xl">
+            <h4 className="font-bold text-4xl">
               Parler en toute confidentialité
             </h4>
-            <p className="p-5">
+            <p className="px-[15%] p-5 text-xl">
               Les communications sont chiffrés de bout en bout. Aucune cookies
               sauvegardés sur votre navigateur.
             </p>
